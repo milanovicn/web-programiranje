@@ -6,6 +6,8 @@ public class Comment {
 	private String author;
 	private String content;
 	private int rate;
+	private boolean approved = true;
+	
 	
 	public Comment(long apartmentId, String author, String content, int rate) {
 		super();
@@ -13,6 +15,7 @@ public class Comment {
 		this.author = author;
 		this.content = content;
 		this.rate = rate;
+		this.approved = true;
 	}
 
 	public Comment() {
@@ -55,6 +58,14 @@ public class Comment {
 	public String toString() {
 		return "Comment [apartmentId=" + apartmentId + ", author=" + author + ", content=" + content + ", rate=" + rate
 				+ "]";
+	}
+
+	public boolean isApproved() {
+		return approved;
+	}
+
+	public void setApproved(boolean approved) {
+		this.approved = approved;
 	}
 	
 	
