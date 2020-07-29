@@ -4,6 +4,7 @@ public class Amenities {
 
 	private long id;
 	private String name;
+	private boolean deleted = false;
 	
 	
 	public Amenities() {
@@ -14,6 +15,7 @@ public class Amenities {
 		super();
 		this.id = id;
 		this.name = name;
+		this.deleted = false;
 	}
 	
 	
@@ -31,6 +33,14 @@ public class Amenities {
 	}
 	
 	
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
 	@Override
 	public String toString() {
 		return "Amenities [id=" + id + ", name=" + name + "]";
