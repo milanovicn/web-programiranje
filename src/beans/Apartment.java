@@ -20,6 +20,7 @@ public class Apartment {
 	private String checkIn = "2PM";
 	private String checkOut = "10AM";
 	private ApartmentStatus status = ApartmentStatus.ACTIVE;
+	private boolean deleted = false;
 	
 	private ArrayList<Amenities> amenities = new ArrayList<Amenities>();
 	private ArrayList<Reservation> reservations = new ArrayList<Reservation>();
@@ -32,13 +33,13 @@ public class Apartment {
 		super();
 		
 	}
-	public Apartment(ApartmentType type, int rooms, int capacity, Location location, LocalDateTime startDate,
-			LocalDateTime endDate, String host, double price, String checkIn, String checkOut) {
+	public Apartment(ApartmentType type, int rooms, int capacity, LocalDateTime startDate,
+			LocalDateTime endDate, String host, double price, String checkIn, String checkOut,
+			String latitude, String longitude, String street, String number, String city, String postalCode) {
 		super();
 		this.type = type;
 		this.rooms = rooms;
 		this.capacity = capacity;
-		this.location = location;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.host = host;
@@ -47,6 +48,9 @@ public class Apartment {
 		this.checkOut = checkOut;
 		this.status = ApartmentStatus.ACTIVE;
 		this.id = 0;
+		this.deleted = false;
+		
+		this.location = new Location(latitude, longitude, street, number, city, postalCode);
 	}
 	
 	
@@ -148,9 +152,12 @@ public class Apartment {
 	public void setId(long id) {
 		this.id = id;
 	}
-	
-	
-	
+	public boolean isDeleted() {
+		return deleted;
+	}
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
 	
 	
 }

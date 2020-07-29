@@ -64,7 +64,7 @@ public class UserDAO {
 			BufferedReader in = null;
 
 			try {
-				file = new File(contextPath + "/_users.txt");
+				file = new File(contextPath + "/data/_users.txt");
 				in = new BufferedReader(new FileReader(file));
 
 				ObjectMapper objectMapper = new ObjectMapper();
@@ -106,13 +106,13 @@ public class UserDAO {
 					}
 				}
 			}
-			System.out.println("loadUsers() -> Putanja za cuvanje:" + filePath + "/_users.txt");
+			System.out.println("loadUsers() -> Putanja za cuvanje:" + filePath + "/data/_users.txt");
 			System.out.println("LOADED USERS: " + users);
 		}
 
 		public void saveUsers() {
-			File file = new File(filePath + "/_users.txt");
-			System.out.println("saveUsers() -> Putanja za cuvanje:" + filePath + "/_users.txt");
+			File file = new File(filePath + "/data/_users.txt");
+			System.out.println("saveUsers() -> Putanja za cuvanje:" + filePath + "/data/_users.txt");
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
