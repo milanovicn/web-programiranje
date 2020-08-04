@@ -13,6 +13,7 @@ public class User {
 	private String lastname;
 	private UserGender gender = UserGender.OTHER;
 	private UserRole role = UserRole.GUEST;
+	private boolean blocked = false;
 	
 	//GUEST
 	private ArrayList<Apartment> rentedApartments = new ArrayList<Apartment>();
@@ -29,7 +30,7 @@ public class User {
 		this.password = password;
 		this.name = name;
 		this.lastname = lastname;
-		
+		this.blocked = false;
 		if(gender.equals("F") || gender.toUpperCase().equals("FEMALE") )
 			this.gender = UserGender.F;
 		else if(gender.equals("M") || gender.toUpperCase().equals("MALE"))
@@ -46,16 +47,29 @@ public class User {
 
 
 	
-	
+
+
+
 	@Override
 	public String toString() {
 		return "User [username=" + username + ", password=" + password + ", name=" + name + ", lastname=" + lastname
-				+ ", gender=" + gender + ", role=" + role + "]";
+				+ ", gender=" + gender + ", role=" + role + ", blocked=" + blocked + ", rentedApartments="
+				+ rentedApartments + ", myReservations=" + myReservations + ", myApartments=" + myApartments + "]";
 	}
 
 
 	public String getUsername() {
 		return username;
+	}
+
+
+	public boolean isBlocked() {
+		return blocked;
+	}
+
+
+	public void setBlocked(boolean blocked) {
+		this.blocked = blocked;
 	}
 
 
