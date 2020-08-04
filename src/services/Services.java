@@ -1,6 +1,7 @@
 package services;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
@@ -9,7 +10,9 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -49,10 +52,11 @@ public class Services {
 	    	//String contextPath2 = ctx.getRealPath("");
 			//ctx.setAttribute("oglasDAO", new OglasDAO(contextPath2));
 		//}
-		//if (ctx.getAttribute("amenitiesDAO") == null) {
-	    	//String contextPath3 = ctx.getRealPath("");
-			//ctx.setAttribute("categoryDAO", new KategorijaDAO(contextPath3));
-		//}	
+		if (ctx.getAttribute("amenitiesDAO") == null) {
+	    	String contextPath3 = ctx.getRealPath("");
+	    	//otkomentarisi
+			//ctx.setAttribute("amenitiesDAO", new AmenitiesDAO(contextPath3));
+		}	
 		
 		
 	}
@@ -70,6 +74,8 @@ public class Services {
 		
 		if(user == null) {
 			return Response.status(400).entity("Wrong password and/or username").build();
+		} else if(user.isBlocked()) {
+			return Response.status(400).entity("Your account is blocked").build();
 		}
 		
 		HttpSession session = request.getSession();
@@ -141,5 +147,51 @@ public class Services {
 		return Response.status(200).build();
 	}
 	
+	@GET
+	@Path("/getAllUsers")
+	@Produces(MediaType.APPLICATION_JSON)
+	public  Collection<User> getAllUsers(@Context HttpServletRequest request) {
+		
+		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");	
+
+		return users.findAll();
+	}
+	
+	
+	@POST
+	@Path("/registerHost")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response registerHost(User u) {
+		
+		
+		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
+						
+		User host = users.addHost(u);
+		
+		if(host == null) {
+			return Response.status(400).entity("Username already exists").build();
+		}
+		
+		u.setRole(UserRole.HOST);
+		u.setMyApartments(new ArrayList<Apartment>());
+		u.setMyReservations(new ArrayList<Reservation>());
+		u.setRentedApartments(new ArrayList<Apartment>());
+		
+		
+		return Response.status(200).build();
+	}
+	
+	@PUT
+	@Path("/blockUser/{usernameBlock}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response blockUser(@PathParam("usernameBlock") String usernameBlock) {
+		
+		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
+				
+		users.blockUser(usernameBlock);
+		
+		return Response.status(200).build();
+	}
 	
 }
