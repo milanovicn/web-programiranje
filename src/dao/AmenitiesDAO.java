@@ -112,8 +112,8 @@ public class AmenitiesDAO {
 	}
 
 	public void saveAmenities() {
-		File file = new File(filePath + "/data/_users.txt");
-		System.out.println("saveUsers() -> Putanja za cuvanje:" + filePath + "/data/amenities.txt");
+		File file = new File(filePath + "/data/_amenities.txt");
+		System.out.println("saveUsers() -> Putanja za cuvanje:" + filePath + "/data/_amenities.txt");
 		try {
 			file.createNewFile();
 		} catch (IOException e) {
@@ -158,18 +158,18 @@ public class AmenitiesDAO {
 			return amenities.values();
 		}
 	 
-		/*
+		
 		public Amenities findAmenites(Amenities amenity) {
 
 			for (Amenities a : amenities.values()) {
 				if (a.getName().equals(amenity.getName())) {
-					return null;
+					return a;
 				}
 			}
 
 			return amenity;
 		}
-		*/
+		
 		
 		public Amenities addAmenities (Amenities amenity) {
 
@@ -178,7 +178,8 @@ public class AmenitiesDAO {
 					return null;
 				}
 			}
-
+			
+			amenity.setId(amenities.size()+1);
 			amenities.put(amenity.getName(), amenity);
 			saveAmenities();
 			

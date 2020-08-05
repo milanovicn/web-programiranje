@@ -227,11 +227,11 @@ public class Services {
 		return Response.status(200).build();
 	}
 	
-	//proveri da li treba {amenityDelete}
+	
 	@PUT
 	@Path("/deleteAmenities/{amenityDelete}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response deleteAmenities(@PathParam("deleteAmenities") String amenityDelete) {
+	public Response deleteAmenities(@PathParam("amenityDelete") String amenityDelete) {
 		
 		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
 				
