@@ -18,10 +18,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import beans.Amenities;
 import beans.Apartment;
 import beans.Reservation;
 import beans.User;
 import beans.enums.UserRole;
+import dao.AmenitiesDAO;
 import dao.UserDAO;
 
 
@@ -52,13 +54,12 @@ public class Services {
 	    	//String contextPath2 = ctx.getRealPath("");
 			//ctx.setAttribute("oglasDAO", new OglasDAO(contextPath2));
 		//}
+		
 		if (ctx.getAttribute("amenitiesDAO") == null) {
 	    	String contextPath3 = ctx.getRealPath("");
-	    	//otkomentarisi
-			//ctx.setAttribute("amenitiesDAO", new AmenitiesDAO(contextPath3));
+			ctx.setAttribute("amenitiesDAO", new AmenitiesDAO (contextPath3));
 		}	
-		
-		
+	
 	}
 	
 	
@@ -193,5 +194,53 @@ public class Services {
 		
 		return Response.status(200).build();
 	}
+	
+	
+	 
+	 
+	@GET
+	@Path("/getAllAmenities")
+	@Produces(MediaType.APPLICATION_JSON)
+	public  Collection<Amenities> getAllAmenities(@Context HttpServletRequest request) {
+		
+		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");	
+
+		return amenities.findAll();
+	}
+	 
+	
+	@POST
+	@Path("/addAmenities")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	
+	public Response addAmenities (Amenities a) {
+			
+		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
+						
+		Amenities amenity = amenities.addAmenities(a);
+		
+		if(amenity == null) {
+			return Response.status(400).entity("Amenity already exists").build();
+		}
+		
+		return Response.status(200).build();
+	}
+	
+	//proveri da li treba {amenityDelete}
+	@PUT
+	@Path("/deleteAmenities/{amenityDelete}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteAmenities(@PathParam("deleteAmenities") String amenityDelete) {
+		
+		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
+				
+		amenities.deleteAmenities(amenityDelete);
+		
+		return Response.status(200).build();
+	}
+	
+	
+	
 	
 }
