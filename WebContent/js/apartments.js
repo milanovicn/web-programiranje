@@ -1,7 +1,17 @@
 var image2 = [];
+var allApartments = [];
+var loggedInUser = "";
 
 $(document).ready(function () {
+	getAllApartments();
 
+	loadApartmentsForUser();
+	$("#hostDiv").hide();
+	$("#userDiv").show();
+	$("#adminDiv").hide();
+
+	
+	allAmenities();
 	$('select').formSelect();
 	$('.datepicker').datepicker();
 	$('.timepicker').timepicker();
@@ -25,13 +35,17 @@ $(document).ready(function () {
 	$("#usersM").hide();
 	$("#logoutM").hide();
 
-
+	$("#hostDiv").hide();
 
 	whoIsLoggedIn();
 
 	$("#logout").click(function () {
 		logOut();
 	});
+	$("#logoutM").click(function () {
+		logOut();
+	});
+
 	$("#createDiv").hide();
 	$("#showCreateDiv").click(function () {
 		$("#createDiv").toggle();
@@ -42,7 +56,9 @@ $(document).ready(function () {
 		saveApartment();
 
 	});
-	
+
+	loadApartmentsForUser();
+
 });
 
 $(function () {
@@ -51,28 +67,36 @@ $(function () {
 
 		if (input.files) {
 
-			var filesAmount = input.files.length;
-			
-			
-			for (i = 0; i < filesAmount; i++) {
-				
-				var reader = new FileReader();
-				reader.onload = function (event) {
-					for(j = 0; j < filesAmount; j++){
-					console.log("i1 ");
-					console.log(i);
-					
+			let filesAmount = input.files.length;
+
+
+			for (let i = 0; i < filesAmount; i++) {
+
+				let reader = new FileReader();
+
+
+				reader.onloadend = function (event) {
+					//for (j = 0; j < filesAmount; j++) {
+					//	console.log("j ");
+					//	console.log(j);
+					//	image2[j] = event.target.result;
+
+					//}
+
 					$($.parseHTML('<img>')).attr({ 'src': event.target.result, 'height': 200 }).appendTo(placeToInsertImagePreview);
-					image2[j]= event.target.result;
-				
-					}
+					//console.log("i etr");
+					//console.log(i);
+					//console.log(event.target.result);
+					image2[i] = event.target.result;
 				}
+
+
+
 				reader.readAsDataURL(input.files[i]);
-				
+
 			}
-			
-			console.log("IMAGE2: ");
-			console.log(image2);
+
+
 		}
 
 	};
@@ -82,27 +106,23 @@ $(function () {
 	});
 });
 
-function readURL(input) { // za sliku
 
-	if (input.files && input.files[0]) {
-		var reader = new FileReader();
-
-		reader.onload = function (e) {
-			$("#previewImage").attr('src', e.target.result, 'width', 200, 'height', 200);
-			image2 = e.target.result;
-		}
-
-		reader.readAsDataURL(input.files[0]);
-	}
-}
 
 function whoIsLoggedIn() {
 	$.get({
 		url: 'rest/whoIsLoggedIn',
 		contentType: 'application/json',
 		success: function (user) {
+			
 			if (user != undefined) {
+				loggedInUser = user.username;
+
 				if (user.role == "GUEST") {
+					loadApartmentsForUser();
+					$("#hostDiv").hide();
+					$("#userDiv").show();
+					$("#adminDiv").hide();
+
 					$("#login").hide();
 					$("#register").hide();
 					$("#apartments").show();
@@ -126,6 +146,12 @@ function whoIsLoggedIn() {
 					console.log(user);
 
 				} else if (user.role == "ADMIN") {
+					loadApartmentsForAdmin();
+					$("#hostDiv").hide();
+					$("#userDiv").hide();
+					$("#adminDiv").show();
+
+
 					$("#login").hide();
 					$("#register").hide();
 					$("#apartments").show();
@@ -148,6 +174,11 @@ function whoIsLoggedIn() {
 					console.log(user);
 
 				} else if (user.role == "HOST") {
+					loadApartmentsForHost();
+					$("#hostDiv").show();
+					$("#userDiv").hide();
+					$("#adminDiv").hide();
+
 					$("#login").hide();
 					$("#register").hide();
 					$("#apartments").show();
@@ -170,11 +201,19 @@ function whoIsLoggedIn() {
 					console.log(user);
 
 				} else {
+					loadApartmentsForUser();
+					$("#hostDiv").hide();
+					$("#userDiv").show();
+					$("#adminDiv").hide();
 					console.log("No one is logged in");
 
 				}
 			} else {
 				console.log("No one is logged in");
+				loadApartmentsForUser();
+					$("#hostDiv").hide();
+					$("#userDiv").show();
+					$("#adminDiv").hide();
 			}
 
 		}
@@ -200,7 +239,6 @@ function saveApartment() {
 
 	event.preventDefault();
 	var images = image2;
-
 	var type = $('#selectType :selected').val();
 	var rooms = $('input[name="rooms"]').val();
 	var capacity = $('input[name="capacity"]').val();
@@ -215,11 +253,26 @@ function saveApartment() {
 	var number = $('input[name="number"]').val();
 	var city = $('input[name="city"]').val();
 	var postalCode = $('input[name="postalCode"]').val();
-	var locationString = latitude+ "," + longitude + "," + street + "," + number + "," + city + "," + postalCode;
+	var locationString = latitude + "," + longitude + "," + street + "," + number + "," + city + "," + postalCode;
 
+	//generating string of chosen amenities
+	var amenitiesString = "";
+	for (let i = 0; i < amenityIds.length; i++) {
+		console.log("usao u for sledeci if");
+		if (($("#aId" + amenityIds[i]).is(":checked")) == true) {
+			amenitiesString += amenityIds[i] + ",";
+			console.log("i + id + amString");
+			console.log(i);
+			console.log(amenityIds[i]);
+			console.log(amenitiesString);
+		}
+	}
+
+	console.log("amenitiesString pre posta");
+	console.log(amenitiesString);
 	$.post({
 		url: 'rest/createApartment',
-		data: JSON.stringify({ type, rooms, capacity, startDate, endDate, checkIn, checkOut, price, locationString, images }),
+		data: JSON.stringify({ type, rooms, capacity, startDate, endDate, checkIn, checkOut, price, locationString, images, amenitiesString }),
 		contentType: 'application/json',
 		success: function () {
 			alert("Apartment created successfully");
@@ -230,4 +283,92 @@ function saveApartment() {
 		}
 	});
 
+}
+
+var amenityIds = [];
+function allAmenities() {
+	$.get({
+		url: 'rest/getAllAmenities',
+		contentType: 'application/json',
+		success: function (amenities) {
+			console.log(amenities);
+			for (let i = 0; i < amenities.length; i++) {
+
+				let amenity = amenities[i];
+				//console.log("i + amenities[i]");
+				//console.log(i);
+				//console.log(amenity);
+				amenityIds[i] = amenity.id;
+				$("#amenitiesDiv").append(
+					'<div class="col s6">' +
+					' <label>' +
+					' <input id="aId' + amenity.id + '"type="checkbox" />' +
+					'<span>' + amenity.name + '</span>' +
+					' </label>' +
+					'</div>'
+
+				);
+			}
+			console.log("amenityIds posle fora");
+			console.log(amenityIds);
+
+		},
+		error: function (jqXhr, textStatus, errorMessage) {
+			console.log(errorMessage);
+		}
+	});
+}
+
+function getAllApartments() {
+	$.get({
+		url: 'rest/getAllApartments',
+		contentType: 'application/json',
+		success: function (apartments) {
+			allApartments = apartments;
+		},
+		error: function (jqXhr, textStatus, errorMessage) {
+			console.log(errorMessage);
+		}
+	});
+
+}
+
+function loadApartmentsForHost() {
+	for (let i = 0; i < allApartments.length; i++) {
+		let apartment = allApartments[i];
+
+		if (apartment.status == "ACTIVE" && apartment.host == loggedInUser) {
+			$("#activeApartmentsListHost").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
+				apartment.id + '"><p>ID:' + apartment.id + ', ' + apartment.locationString + '</p></a></li>');
+		}
+
+		if (apartment.status == "INACTIVE" && apartment.host == loggedInUser) {
+			$("#inactiveApartmentsListHost").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
+				apartment.id + '">ID:' + apartment.id + ', ' + apartment.locationString + '</a></li>');
+		}
+
+	}
+}
+
+function loadApartmentsForUser() {
+	for (let i = 0; i < allApartments.length; i++) {
+		let apartment = allApartments[i];
+
+		if (apartment.status == "ACTIVE") {
+			$("#activeApartmentsListUser").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
+			apartment.id +'">' +'ID:'+ apartment.id + ', '+apartment.locationString + ', hosted by: ' + apartment.host + '</a></li>');
+		}
+
+	}
+}
+
+function loadApartmentsForAdmin() {
+	for (let i = 0; i < allApartments.length; i++) {
+		let apartment = allApartments[i];
+
+		$("#allApartmentsListAdmin").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
+			apartment.id +'">' +'ID:'+ apartment.id + ', '+apartment.locationString + ', hosted by: ' + apartment.host  +'</a></li>');
+
+
+	}
 }

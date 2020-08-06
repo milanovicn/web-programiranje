@@ -1,0 +1,2 @@
+{"Parking":{"id":1,"name":"Parking","deleted":false}, "AC":{"id":2,"name":"AC","deleted":false}, "WiFi":{"id":3,"name":"Wifi","deleted":false}, 
+"TV":{"id":4,"name":"TV","deleted":false}, "Hot Water":{"id":5,"name":"Hot Water","deleted":false}, "Microwave Oven":{"id":6,"name":"Microwave Oven","deleted":false} }

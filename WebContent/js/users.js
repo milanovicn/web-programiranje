@@ -20,6 +20,7 @@ $(document).ready(function () {
     $("#logoutM").hide();
 
 
+
     $('select').formSelect();
     
     whoIsLoggedIn();
@@ -29,7 +30,9 @@ $(document).ready(function () {
         logOut();
     });
 
-   
+   $("#logoutM").click(function () {
+        logOut();
+    });  
     
     $("#registrationForm").submit(function (event) {
         registerHost();
