@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import beans.Apartment;
 import beans.User;
 import beans.enums.UserRole;
 
@@ -234,8 +235,19 @@ public class UserDAO {
 		for (User u : users.values()) {
 			if (u.getUsername().equals(usernameBlock)) {
 				u.setBlocked(true);
+				saveUsers();
 			}
 		}
+	}
+
+	public void addToMyApartments(String host, Apartment a) {
+		for (User u : users.values()) {
+			if (u.getUsername().equals(host)) {
+				u.getMyApartments().add(a);
+				saveUsers();
+			}
+		}
+		
 	}
 	
 	

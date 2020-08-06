@@ -118,7 +118,7 @@ function logOut() {
 	$.post({
 		url : 'rest/logOut',
 		success : function() {
-			//alert("Uspešno ste se odjavili");
+			alert("Log out successful");
 			window.location = "./home.html";
 		},
 		error : function(jqXhr, textStatus, errorMessage) {
