@@ -196,8 +196,10 @@ public class Services {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createApartment(Apartment a, @Context HttpServletRequest request) {
-		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");		
+		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");	
+		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
 		
+		//find host that created apartment
 		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");		
 		HttpSession session = request.getSession();
 		User host = (User) session.getAttribute("user");
@@ -205,22 +207,25 @@ public class Services {
 		//mozda lokacija dao?
 		//KategorijaDAO kategorije = (KategorijaDAO) ctx.getAttribute("categoryDAO");	
 		
-		//System.out.println("SRC SLIKE :"+o.getImage()); // data:image/jpeg;base64,/9j/..... split na ,
-		//String split[] = a.getImages().split(",");
-		//System.out.println(split[1]);
-		//o.setImage(split[1]);
-		System.out.println("SLIKE SA FRONTA" + a.getImages());
 		
-		//for(String img : a.getImages()) {
+		//adding amenities to list
+		a.setAmenities(new ArrayList<Amenities>());
+		String splitAm[] = a.getAmenitiesString().split(",");
+		for(int i = 0; i<splitAm.length; i++ ) {
+			Amenities foundAmenity = amenities.findById(Long.parseLong(splitAm[i]));
+			a.getAmenities().add(foundAmenity);
+		}
+		
+		
+		//formating images strings
 		for(int i = 0; i<a.getImages().size(); i++ ) {
 			String img = a.getImages().get(i);
 			String split[] = img.split(",");
 			img=split[1];
 			a.getImages().set(i, img);
-			System.out.println("IMG{"+i+"}" + img);
 		}
-		System.out.println("SLIKE POSLE FRONTA" + a.getImages());
 		
+		//creating apartment
 		if  (a != null && host != null) {
 			a.setHost(host.getUsername());
 			Apartment apt =  apartments.addApartment(a);
@@ -237,10 +242,18 @@ public class Services {
 		//	kategorije.addOglasUKategoriju(updejtovanaKategorija, o);
 		//}
 		
-		return Response.status(200).build();
+		return Response.status(200).entity("Apartment created" + a).build();
 	}
 
-	 
+	@GET
+	@Path("/getAllApartments")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Apartment> getAllApartments(@Context HttpServletRequest request) {
+
+		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+
+		return apartments.findAll();
+	}
 	@GET
 	@Path("/getAllAmenities")
 	@Produces(MediaType.APPLICATION_JSON)

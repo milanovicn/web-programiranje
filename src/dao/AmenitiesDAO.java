@@ -35,7 +35,7 @@ public class AmenitiesDAO {
 		setFilePath(contextPath);
 		setAmenities(new HashMap<String, Amenities>());
 		// testData();
-		//loadAmenities(contextPath);
+		loadAmenities(contextPath);
 
 	}
 	
@@ -65,7 +65,7 @@ public class AmenitiesDAO {
 		BufferedReader in = null;
 
 		try {
-			file = new File(contextPath + "/data/_users.txt");
+			file = new File(contextPath + "/data/_amenities.txt");
 			in = new BufferedReader(new FileReader(file));
 
 			ObjectMapper objectMapper = new ObjectMapper();
@@ -73,7 +73,7 @@ public class AmenitiesDAO {
 					VisibilityChecker.Std.defaultInstance().withFieldVisibility(JsonAutoDetect.Visibility.ANY));
 
 			TypeFactory factory = TypeFactory.defaultInstance();
-			MapType type = factory.constructMapType(HashMap.class, String.class, User.class);
+			MapType type = factory.constructMapType(HashMap.class, String.class, Amenities.class);
 			objectMapper.getFactory().configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);
 			amenities = (HashMap<String, Amenities>) objectMapper.readValue(file, type);
 		} catch (FileNotFoundException fnf) {
@@ -194,7 +194,18 @@ public class AmenitiesDAO {
 				}
 			}
 		}
+		
+		public Amenities findById(Long id) {
 
+			for (Amenities a : amenities.values()) {
+				if (a.getId() == id) {
+					return a;
+				}
+			}
+
+			return null;
+		}
+		
 	
 		
 }

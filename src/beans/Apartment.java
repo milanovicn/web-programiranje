@@ -24,6 +24,7 @@ public class Apartment {
 	private ApartmentStatus status = ApartmentStatus.ACTIVE;
 	private boolean deleted = false;
 	private ArrayList<String> images = new ArrayList<String>();
+	private String amenitiesString = "";
 	
 	private ArrayList<Amenities> amenities = new ArrayList<Amenities>();
 	private ArrayList<Reservation> reservations = new ArrayList<Reservation>();
@@ -71,7 +72,15 @@ public class Apartment {
 				+ location + ", locationString=" + locationString + ", startDate=" + startDate + ", endDate=" + endDate
 				+ ", host=" + host + ", price=" + price + ", checkIn=" + checkIn + ", checkOut=" + checkOut
 				+ ", status=" + status + ", deleted=" + deleted + ", images=" + images + ", amenities=" + amenities
-				+ ", reservations=" + reservations + ", comments=" + comments + "]";
+				+ ", reservations=" + reservations + ", comments=" + comments +  ", amenitiesString=" + amenitiesString +"]";
+	}
+	
+	
+	public String getAmenitiesString() {
+		return amenitiesString;
+	}
+	public void setAmenitiesString(String amenitiesString) {
+		this.amenitiesString = amenitiesString;
 	}
 	public ArrayList<String> getImages() {
 		return images;
