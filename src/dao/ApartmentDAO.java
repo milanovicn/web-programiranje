@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import Decoder.BASE64Decoder;
+import beans.Amenities;
 import beans.Apartment;
 import beans.Location;
 import beans.User;
@@ -158,20 +160,27 @@ public class ApartmentDAO {
 		}
 
 
+		
+		//methods
+		public Collection<Apartment> findAll() {
+			return apartments.values();
+		}
+		
 		public Apartment addApartment(Apartment a) {
+			a.setId(apartments.size()+1);
 			//slika
 			ArrayList<String> newImages = new ArrayList<String>();
 			
 			for(int i = 0; i < a.getImages().size(); i++) {
 				System.out.println("Image[" + i + "] = " + a.getImages().get(i));
 				if(a.getImages().get(i) != null) {
-					save("ID:" + a.getId() + "-" + a.getHost()+ "-" + i, "png", a.getImages().get(i));
+					save("ID-" + a.getId() + "-" + a.getHost()+ "-" + i, "png", a.getImages().get(i));
 					//o.setImage("/ProjekatRA1812016/images/" + o.getName() + "-" + o.getUsernameProdavca() + "." + "png");
-					newImages.add(filePath+ "imgs\\"+"ID:" + a.getId() + "-" + a.getHost()+ "-" + i + "." + "png");
+					newImages.add(filePath+ "imgs\\"+"ID-" + a.getId() + "-" + a.getHost()+ "-" + i + "." + "png");
 				}
 			}
 			a.setImages(newImages);
-			a.setId(apartments.size()+1);
+			
 			String[] locationInfo = a.getLocationString().split(",");
 			a.setLocation(new Location(locationInfo[0], locationInfo[1], locationInfo[2], locationInfo[3], locationInfo[4], locationInfo[5]));
 			
