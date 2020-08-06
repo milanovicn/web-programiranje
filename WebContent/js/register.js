@@ -17,6 +17,7 @@ $(document).ready(function () {
 	$("#reservationsM").hide();
 	$("#usersM").hide();
 	$("#logoutM").hide();
+	
 
 
 	$('select').formSelect();

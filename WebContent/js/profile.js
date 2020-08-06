@@ -28,6 +28,9 @@ $(document).ready(function () {
     $("#logout").click(function () {
         logOut();
     });
+    $("#logoutM").click(function () {
+        logOut();
+    });  
 
     $("#editProfileForm").submit(function (event) {
         event.preventDefault();
