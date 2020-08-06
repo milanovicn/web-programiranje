@@ -18,11 +18,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import beans.Amenities;
 import beans.Apartment;
 import beans.Reservation;
 import beans.User;
 import beans.enums.UserRole;
 import dao.ApartmentDAO;
+import dao.AmenitiesDAO;
 import dao.UserDAO;
 
 @Path("")
@@ -38,7 +40,7 @@ public class Services {
 	// ctx polje je null u konstruktoru, mora se pozvati nakon konstruktora
 	// (@PostConstruct anotacija)
 	public void init() {
-		// Ovaj objekat se instancira viöe puta u toku rada aplikacije
+		// Ovaj objekat se instancira vi≈°e puta u toku rada aplikacije
 		// Inicijalizacija treba da se obavi samo jednom
 		if (ctx.getAttribute("userDAO") == null) {
 			String contextPath1 = ctx.getRealPath("");
@@ -47,15 +49,17 @@ public class Services {
 			UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
 			System.out.println("USER-DAO: " + users.toString());
 		}
+
 		if (ctx.getAttribute("apartmentDAO") == null) {
 			String contextPath2 = ctx.getRealPath("");
 			ctx.setAttribute("apartmentDAO", new ApartmentDAO(contextPath2));
 		}
+		
 		if (ctx.getAttribute("amenitiesDAO") == null) {
-			String contextPath3 = ctx.getRealPath("");
-			// otkomentarisi
-			// ctx.setAttribute("amenitiesDAO", new AmenitiesDAO(contextPath3));
-		}
+	    	String contextPath3 = ctx.getRealPath("");
+			ctx.setAttribute("amenitiesDAO", new AmenitiesDAO (contextPath3));
+		}	
+	
 
 	}
 
@@ -235,4 +239,49 @@ public class Services {
 		
 		return Response.status(200).build();
 	}
+
+	 
+	@GET
+	@Path("/getAllAmenities")
+	@Produces(MediaType.APPLICATION_JSON)
+	public  Collection<Amenities> getAllAmenities(@Context HttpServletRequest request) {
+		
+		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");	
+
+		return amenities.findAll();
+	}
+	 
+	
+	@POST
+	@Path("/addAmenities")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	
+	public Response addAmenities (Amenities a) {
+			
+		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
+						
+		Amenities amenity = amenities.addAmenities(a);
+		
+		if(amenity == null) {
+			return Response.status(400).entity("Amenity already exists").build();
+		}
+		
+		return Response.status(200).build();
+	}
+	
+	
+	@PUT
+	@Path("/deleteAmenities/{amenityDelete}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteAmenities(@PathParam("amenityDelete") String amenityDelete) {
+		
+		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
+				
+		amenities.deleteAmenities(amenityDelete);
+		
+		return Response.status(200).build();
+	}
+	
+
 }

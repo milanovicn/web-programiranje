@@ -7,7 +7,6 @@ $(document).ready(function () {
     $("#reservations").hide();
     $("#users").hide();
     $("#logout").hide();
-    $("#adminDiv").hide();
 
 
     $("#loginM").show();
@@ -23,7 +22,6 @@ $(document).ready(function () {
     $('select').formSelect();
     
     whoIsLoggedIn();
-    blockUser();
 
     $("#logout").click(function () {
         logOut();
@@ -31,21 +29,14 @@ $(document).ready(function () {
 
    
     
-    $("#registrationForm").submit(function (event) {
-        registerHost();
+    $("#addAmenityForm").submit(function (event) {
+        addAmenity();
     });
 
-    $("#createDiv").hide();
-    $("#showCreateDiv").click(function() {
-		$("#createDiv").toggle();
-	});
+
 
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    var elems = document.querySelectorAll('select');
-    var instances = M.FormSelect.init(elems);
-});
 
 function whoIsLoggedIn() {
     $.get({
@@ -54,8 +45,6 @@ function whoIsLoggedIn() {
         success: function (user) {
             if (user != undefined) {
                 if (user.role == "GUEST") {
-                    $("#adminDiv").hide();
-
                     $("#login").hide();
                     $("#register").hide();
                     $("#apartments").show();
@@ -64,6 +53,8 @@ function whoIsLoggedIn() {
                     $("#reservations").show();
                     $("#users").hide();
                     $("#logout").show();
+
+                    $("#adminDiv").hide();
 
                     $("#loginM").hide();
                     $("#registerM").hide();
@@ -77,9 +68,7 @@ function whoIsLoggedIn() {
                     console.log(user);
 
                 } else if (user.role == "ADMIN") {
-                    allUsers();
-                    $("#adminDiv").show();
-
+                    allAmenities();
                     $("#login").hide();
                     $("#register").hide();
                     $("#apartments").show();
@@ -88,6 +77,8 @@ function whoIsLoggedIn() {
                     $("#reservations").show();
                     $("#users").show();
                     $("#logout").show();
+
+                    $("#adminDiv").show();
 
                     $("#loginM").hide();
                     $("#registerM").hide();
@@ -102,8 +93,6 @@ function whoIsLoggedIn() {
                     console.log(user);
 
                 } else if (user.role == "HOST") {
-                    $("#adminDiv").hide();
-                   
                     $("#login").hide();
                     $("#register").hide();
                     $("#apartments").show();
@@ -112,6 +101,8 @@ function whoIsLoggedIn() {
                     $("#reservations").show();
                     $("#users").show();
                     $("#logout").show();
+
+                    $("#adminDiv").hide();
 
                     $("#loginM").hide();
                     $("#registerM").hide();
@@ -150,63 +141,46 @@ function logOut() {
         }
 
     });
+    
 }
 
-function registerHost() {
+function addAmenity() {
     event.preventDefault();
 
-    var username = $('input[name="username"]').val();
-    var password = $('input[name="password"]').val();
     var name = $('input[name="name"]').val();
-    var lastname = $('input[name="lastname"]').val();
-    var gender = $('#selectGender :selected').val();
-    var passwordControl = $('input[name="passwordControl"]').val();
-
-    console.log("Password: ");
-    console.log(password);
-    console.log("PasswordControl: ");
-    console.log(passwordControl);
-
-    if (password == passwordControl) {
+   
+   
         $.post({
-            url: 'rest/registerHost',
-            data: JSON.stringify({ username, password, name, lastname, gender }),
+            url: 'rest/addAmenities',
+            data: JSON.stringify({ name }),
             contentType: 'application/json',
             success: function () {
-                alert("Registration successful");
+                alert("amenity created");
                 location.reload();
             },
             error: function () {
-                alert("Username already registered");
+                alert("Amenity already exists");
             }
         });
-    } else {
-        alert("Password and repeated passsword not matching, try again");
-    }
-
 }
 
-function allUsers() {
+function allAmenities() {
     $.get({
-        url: 'rest/getAllUsers',
+        url: 'rest/getAllAmenities',
         contentType: 'application/json',
-        success: function (users) {
+        success: function (amenities) {
 
-            for (var user of users) {
-                $("#allUsersList").append('<div class="row"><ul class="collection with-header" ><li class="collection-header"> <h5 class="grey-text" id="usernameLi">Username: ' + user.username + '  </h5></li>'
-                    + '<li class="collection-item grey-text" >Role: ' + user.role + '</li>'
-                    + '<li class="collection-item grey-text" >Gender: ' + user.gender + '</li>'
-                    + '<li class="collection-item grey-text" >Name: ' + user.name + '</li>'
-                    + '<li class="collection-item grey-text" >Lastname: ' + user.lastname + '</li>' + '</ul></div>');
-
+            for (var amenity of amenities) {
+                $("#allAmenitiesList").append('<div class="row"><ul class="collection with-header" ><li class="collection-header"> <h5 class="grey-text" id="nameLi">Name: ' + amenity.name + '  </h5></li></ul></div>');
             }
 
+// POPRAVI DA RADI
 
-            
-            var Options="<option value=\"USERNAME\" disabled selected>Choose username</option>";
-            for (var u of users) {
-                if (u.blocked == false) {
-                    Options=Options+"<option value='"+u.username+"'>"+u.username+"</option>";
+            var Options="<option value=\"NAME\" disabled selected>Choose name</option>";
+
+            for (var a of amenities) {
+                if (a.deleted == false) {
+                    Options=Options+"<option value='" + a.name + "'></option>";
                 }
             }
 
@@ -215,8 +189,6 @@ function allUsers() {
             $('#selectUser').append(Options);
             $("#selectUser").formSelect();
 
-
-
         },
         error: function (jqXhr, textStatus, errorMessage) {
             console.log(errorMessage);
@@ -224,17 +196,16 @@ function allUsers() {
     });
 }
 
-function blockUser() {
-    $("#blockUser").click(function () {
-        var username = $('#selectUser :selected').text();
-    
-        console.log("USERNAME ZA BLOCK: ");
-        console.log(username);
+
+function deleteAmenity () {
+    $("#deleteAmenity").click(function () {
+        var name = $('#selectAmenity :selected').text();
+ 
         $.ajax({
-            url: 'rest/blockUser/' + username,
+            url: 'rest/deleteAmenities/' + name,
             type: 'PUT',
             success: function () {
-                alert("UserBlocked");
+                alert("Amwnity deleted.");
             },
             error: function (jqXhr, textStatus, errorThrown) {
                 console.log(errorThrown);
