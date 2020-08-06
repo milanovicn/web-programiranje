@@ -1,5 +1,6 @@
 package beans;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -12,15 +13,17 @@ public class Apartment {
 	private ApartmentType type = ApartmentType.APARTMENT;
 	private int rooms;
 	private int capacity;
-	private Location location;
-	private LocalDateTime startDate;
-	private LocalDateTime endDate;
+	private Location location = new Location();
+	private String locationString = "";
+	private String startDate;
+	private String endDate;
 	private String host;
 	private double price;
 	private String checkIn = "2PM";
 	private String checkOut = "10AM";
 	private ApartmentStatus status = ApartmentStatus.ACTIVE;
 	private boolean deleted = false;
+	private ArrayList<String> images = new ArrayList<String>();
 	
 	private ArrayList<Amenities> amenities = new ArrayList<Amenities>();
 	private ArrayList<Reservation> reservations = new ArrayList<Reservation>();
@@ -29,13 +32,14 @@ public class Apartment {
 	//slike
 		
 	
+	
 	public Apartment() {
 		super();
 		
 	}
-	public Apartment(ApartmentType type, int rooms, int capacity, LocalDateTime startDate,
-			LocalDateTime endDate, String host, double price, String checkIn, String checkOut,
-			String latitude, String longitude, String street, String number, String city, String postalCode) {
+	public Apartment(ApartmentType type, int rooms, int capacity, String startDate,
+			String endDate, String host, double price, String checkIn, String checkOut,
+			String locationString, ArrayList<String> images) {
 		super();
 		this.type = type;
 		this.rooms = rooms;
@@ -49,19 +53,38 @@ public class Apartment {
 		this.status = ApartmentStatus.ACTIVE;
 		this.id = 0;
 		this.deleted = false;
+		this.locationString = locationString;
+		this.images=images;
+		String[] locationInfo = this.locationString.split(",");
+		this.location = new Location(locationInfo[0], locationInfo[1],
+				locationInfo[2], locationInfo[3], locationInfo[4], locationInfo[5]);
 		
-		this.location = new Location(latitude, longitude, street, number, city, postalCode);
 	}
+	
+	
+
 	
 	
 	@Override
 	public String toString() {
-		return "Apartment [type=" + type + ", rooms=" + rooms + ", capacity=" + capacity + ", location=" + location
-				+ ", startDate=" + startDate + ", endDate=" + endDate + ", host=" + host + ", price=" + price
-				+ ", checkIn=" + checkIn + ", checkOut=" + checkOut + ", status=" + status + "]";
+		return "Apartment [id=" + id + ", type=" + type + ", rooms=" + rooms + ", capacity=" + capacity + ", location="
+				+ location + ", locationString=" + locationString + ", startDate=" + startDate + ", endDate=" + endDate
+				+ ", host=" + host + ", price=" + price + ", checkIn=" + checkIn + ", checkOut=" + checkOut
+				+ ", status=" + status + ", deleted=" + deleted + ", images=" + images + ", amenities=" + amenities
+				+ ", reservations=" + reservations + ", comments=" + comments + "]";
 	}
-	
-	
+	public ArrayList<String> getImages() {
+		return images;
+	}
+	public void setImages(ArrayList<String> images) {
+		this.images = images;
+	}
+	public String getLocationString() {
+		return locationString;
+	}
+	public void setLocationString(String locationString) {
+		this.locationString = locationString;
+	}
 	public ApartmentType getType() {
 		return type;
 	}
@@ -86,16 +109,16 @@ public class Apartment {
 	public void setLocation(Location location) {
 		this.location = location;
 	}
-	public LocalDateTime getStartDate() {
+	public String getStartDate() {
 		return startDate;
 	}
-	public void setStartDate(LocalDateTime startDate) {
+	public void setStartDate(String startDate) {
 		this.startDate = startDate;
 	}
-	public LocalDateTime getEndDate() {
+	public String getEndDate() {
 		return endDate;
 	}
-	public void setEndDate(LocalDateTime endDate) {
+	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
 	public String getHost() {

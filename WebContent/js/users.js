@@ -35,10 +35,17 @@ $(document).ready(function () {
         registerHost();
     });
 
-
+    $("#createDiv").hide();
+    $("#showCreateDiv").click(function() {
+		$("#createDiv").toggle();
+	});
 
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('select');
+    var instances = M.FormSelect.init(elems);
+});
 
 function whoIsLoggedIn() {
     $.get({
@@ -47,6 +54,8 @@ function whoIsLoggedIn() {
         success: function (user) {
             if (user != undefined) {
                 if (user.role == "GUEST") {
+                    $("#adminDiv").hide();
+
                     $("#login").hide();
                     $("#register").hide();
                     $("#apartments").show();
@@ -55,8 +64,6 @@ function whoIsLoggedIn() {
                     $("#reservations").show();
                     $("#users").hide();
                     $("#logout").show();
-
-                    $("#adminDiv").hide();
 
                     $("#loginM").hide();
                     $("#registerM").hide();
@@ -71,6 +78,8 @@ function whoIsLoggedIn() {
 
                 } else if (user.role == "ADMIN") {
                     allUsers();
+                    $("#adminDiv").show();
+
                     $("#login").hide();
                     $("#register").hide();
                     $("#apartments").show();
@@ -79,8 +88,6 @@ function whoIsLoggedIn() {
                     $("#reservations").show();
                     $("#users").show();
                     $("#logout").show();
-
-                    $("#adminDiv").show();
 
                     $("#loginM").hide();
                     $("#registerM").hide();
@@ -95,6 +102,8 @@ function whoIsLoggedIn() {
                     console.log(user);
 
                 } else if (user.role == "HOST") {
+                    $("#adminDiv").hide();
+                   
                     $("#login").hide();
                     $("#register").hide();
                     $("#apartments").show();
@@ -103,8 +112,6 @@ function whoIsLoggedIn() {
                     $("#reservations").show();
                     $("#users").show();
                     $("#logout").show();
-
-                    $("#adminDiv").hide();
 
                     $("#loginM").hide();
                     $("#registerM").hide();
@@ -194,15 +201,17 @@ function allUsers() {
 
             }
 
-            //POPRAVITI STO NE UCITAVA USERNAMES U SELECTUSER
+            
+            var Options="<option value=\"USERNAME\" disabled selected>Choose username</option>";
             for (var u of users) {
                 if (u.blocked == false) {
-                    console.log("User: ");
-                    console.log(u);
-                    $("#selectUser").append('<option value="' + u.username + '">' + u.username + '</option>');
+                    Options=Options+"<option value='"+u.username+"'>"+u.username+"</option>";
                 }
             }
-
+            
+            $('#selectUser').empty();
+            $('#selectUser').append(Options);
+            $("#selectUser").formSelect();
 
 
         },

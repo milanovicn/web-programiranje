@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Apartments</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection" />
+    <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection" />
+
+</head>
+
+<body>
+
+    <!--Nav bar-->
+    <nav class="white" role="navigation">
+        <div class="nav-wrapper container">
+            <a id="logo-container" href="home.html" class="brand-logo"><i class="material-icons">explore</i></a>
+            <ul class="right hide-on-med-and-down">
+                <li id="login"><a href="login.html">Log in</a></li>
+                <li id="register"><a href="register.html">Register</a></li>
+                <li id="profile"><a href="profile.html">Profile</a></li>
+                <li id="apartments"><a href="apartments.html">Apartments</a></li>
+                <li id="reservations"><a href="reservations.html">Reservations</a></li>
+                <li id="users"><a href="users.html">Users</a></li>
+                <li id="amenities"><a href="amenities.html">Amenities</a></li>
+                <li id="logout"><a href="logout.html">Log out</a></li>
+            </ul>
+
+            <ul id="nav-mobile" class="sidenav">
+                <li id="loginM"><a href="login.html">Log in</a></li>
+                <li id="registerM"><a href="register.html">Register</a></li>
+                <li id="profileM"><a href="profile.html">Profile</a></li>
+                <li id="apartmentsM"><a href="apartments.html">Apartments</a></li>
+                <li id="reservationsM"><a href="reservations.html">Reservations</a></li>
+                <li id="usersM"><a href="users.html">Users</a></li>
+                <li id="amenitiesM"><a href="amenities.html">Amenities</a></li>
+                <li id="logoutM"><a href="logout.html">Log out</a></li>
+            </ul>
+            <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+
+
+        </div>
+    </nav>
+
+    <!--HOST DIV-->
+
+    <!--Create apartment-->
+    <div class="row ">
+        <h5 class="header col s4 dark grey-text text-darken-3 ">Create new apartment
+            <a class="btn-floating  waves-effect waves-light" id="showCreateDiv"><i class="material-icons">add</i></a>
+        </h5>
+    </div>
+    <div id="createDiv">
+        <div class="row  s8 15 offset-12" style="margin-top: 20px;">
+            <form class="col s12" id="createForm">
+
+                <div class="col s6">
+                    <h6>Basic informations</h6>
+                    <div class="input-field col s12">
+                        <select id="selectType" required>
+                            <option value="APARTMENT" disabled selected>Choose type</option>
+                            <option value="STUDIO">Studio</option>
+                            <option value="APARTMENT">Apartment</option>
+                        </select>
+                        <label>Apartment type</label>
+                    </div>
+
+                    <div class="input-field col s12">
+                        <label>Rooms</label></div>
+                    <div class="input-field col s12">
+                        <input class="validate" required name="rooms" type="range" id="rooms" min="1" max="10" />
+                    </div>
+
+
+                    <div class="input-field col s12">
+                        <label>Capacity</label></div>
+                    <div class="input-field col s12">
+                        <input class="validate" required name="capacity" type="range" id="capacity" min="1" max="40" />
+                    </div>
+
+                    <div class="input-field col s12">
+                        <input id="price" name="price" type="number" class="validate" required>
+                        <label for="price">Price per night</label>
+                    </div>
+
+
+
+                    <div>
+                        <h6>Available dates</h6>
+                        <div class="input-field col s6">
+                            <input id="startDate" name="startDate" type="text" class="validate datepicker" required>
+                            <label for="startDate">Start Date</label>
+                        </div>
+
+                        <div class="input-field col s6">
+                            <input id="endDate" name="endDate" type="text" class="validate datepicker" required>
+                            <label for="endDate">End Date</label>
+                        </div>
+                    </div>
+
+
+
+                    <div>
+                        <h6>Time to check in and check out:</h6>
+                        <div class="input-field col s6">
+                            <input id="checkIn" name="checkIn" type="text" class="validate timepicker" required>
+                            <label for="checkIn">Check In Time</label>
+                        </div>
+
+                        <div class="input-field col s6">
+                            <input id="checkOut" name="checkOut" type="text" class="validate timepicker" required>
+                            <label for="checkOut">Check Out Time</label>
+                        </div>
+                    </div>
+
+
+                    <div>
+                        <h6>Location</h6>
+                        <div class="input-field col s6">
+                            <input id="street" name="street" type="text" class="validate" required>
+                            <label for="street">Street</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="number" name="number" type="number" class="validate" required>
+                            <label for="number">Number</label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="input-field col s6">
+                            <input id="city" name="city" type="text" class="validate" required>
+                            <label for="city">City</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="postalCode" name="postalCode" type="number" class="validate" required>
+                            <label for="postalCode">Postal Code</label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="input-field col s6">
+                            <input id="latitude" name="latitude" type="number" class="validate" required>
+                            <label for="latitude">Latitude</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="longitude" name="longitude" type="number" class="validate" required>
+                            <label for="longitude">Longitude</label>
+                        </div>
+                    </div>
+
+                    <h6>Images of Apartment</h6>
+                    <div class="gallery"></div>
+                    <img id="previewImage" src="#" alt="" width="200" height="200" />
+
+                    <div class="file-field input-field">
+                        <div class="btn">
+                            <span>File</span>
+                            <input type="file" multiple id="gallery-photo-add" name="image" accept="image/*" required>
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text" placeholder="Upload one or more files">
+                        </div>
+                    </div>
+                </div>
+                <div class="col s6">
+                    <h6>Available Amenities</h6>
+                </div>
+
+                <div class="col s12">
+                    <button class="btn waves-effect waves-light right btn-large" type="submit" value="Register" name="register">Submit
+                        <i class="material-icons right">send</i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <!--  Scripts-->
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="js/apartments.js"></script>
+    <script src="js/materialize.js"></script>
+    <script src="js/init.js"></script>
+
+</body>
+
+</html>
