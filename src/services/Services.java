@@ -237,12 +237,6 @@ public class Services {
 			Response.status(400).entity("Apartment is null").build();
 		}
 		
-		//if (o != null) {
-		//	String kategorija = o.getCategory();
-		//	Kategorija updejtovanaKategorija = kategorije.findByName(kategorija);
-		//	kategorije.addOglasUKategoriju(updejtovanaKategorija, o);
-		//}
-		
 		return Response.status(200).entity("Apartment created" + a).build();
 	}
 
@@ -255,6 +249,19 @@ public class Services {
 
 		return apartments.findAll();
 	}
+	
+	@GET
+	@Path("/getApartmentById/{apartmentId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Apartment getApartmentById(@PathParam("apartmentId") Long apartmentId) {
+
+		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+		Apartment ret = apartments.findById(apartmentId);
+	
+		
+		return ret;
+	}
+	
 	@GET
 	@Path("/getAllAmenities")
 	@Produces(MediaType.APPLICATION_JSON)
