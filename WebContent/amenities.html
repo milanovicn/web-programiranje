@@ -44,53 +44,59 @@
         </div>
     </nav>
 
-
-    <!--Add amenity-->
-    <div class="row ">
-        <h3 class="header col s12 dark ">Add amenity</h3>
-        <form class="col" id="addAmenityForm">
-      
-            <div class="input-field col s12">
-                <input id="name" name="name" type="text" class="validate" required>
-                <label for="name">name</label>
-            </div>
-
-        <button id="addAmenity" class="btn waves-effect waves-light" name="addAmenity">Add
-            <i class="material-icons right">send</i>
-        </button>
-    </form>
-    </div>
+    <div class="row">
 
         <!--All amenities -->
+
+        <div class="col s6">
             <div class="row ">
                 <h3 class="header col s12 dark ">All amenities</h3>
             </div>
-    
+
             <div class="row s6 15 offset-12" style="margin-top: 20px" id="allAmenitiesList">
-                
+
                 <!--List of all amenities-->
             </div>
-
-        <!--Delete amenity-->
-        <div class="row ">
-            <h3 class="header col s12 dark ">Delete amenity</h3>
-            <form class="col" id="deleteAmenityForm">
-            <div class="input-field col s12">
-                <select id="selectAmenity" required >
-                    <option value="NAME" disabled selected>Choose name</option >
-            
-
-                </select>
-                <label>Name</label>
-            </div>
-
-            <button id="deleteAmenity" class="btn waves-effect waves-light" name="deleteAmenity">Delete
-                <i class="material-icons right">send</i>
-            </button>
-        </form>
         </div>
 
+        <!--Add amenity-->
+        <div class="col s6">
+            <div class="row ">
+                <h3 class="header col s12 dark ">Add amenity</h3>
+                <form class="col" id="addAmenityForm">
 
+                    <div class="input-field col s12">
+                        <input id="name" name="name" type="text" class="validate" required>
+                        <label for="name">name</label>
+                    </div>
+
+                    <button id="addAmenity" class="btn waves-effect waves-light" name="addAmenity">Add
+                        <i class="material-icons right">send</i>
+                    </button>
+                </form>
+            </div>
+
+
+            <!--Delete amenity-->
+            <div class="row ">
+                <h3 class="header col s12 dark ">Delete amenity</h3>
+                <form class="col" id="deleteAmenityForm">
+                    <div class="input-field col s12">
+                        <select id="selectAmenity" required>
+                            <option value="NAME" disabled selected>Choose name</option>
+
+
+                        </select>
+                        <label>Name</label>
+                    </div>
+
+                    <button id="deleteAmenity" class="btn waves-effect waves-light" name="deleteAmenity">Delete
+                        <i class="material-icons right">send</i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
     <!--  Scripts-->
     <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="js/amenities.js"></script>

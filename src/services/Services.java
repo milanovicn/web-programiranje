@@ -8,6 +8,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -23,8 +24,8 @@ import beans.Apartment;
 import beans.Reservation;
 import beans.User;
 import beans.enums.UserRole;
-import dao.ApartmentDAO;
 import dao.AmenitiesDAO;
+import dao.ApartmentDAO;
 import dao.UserDAO;
 
 @Path("")
@@ -284,16 +285,16 @@ public class Services {
 	}
 	
 	
-	@PUT
+	@DELETE
 	@Path("/deleteAmenities/{amenityDelete}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteAmenities(@PathParam("amenityDelete") String amenityDelete) {
 		
 		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
 				
-		amenities.deleteAmenities(amenityDelete);
+		Amenities am = amenities.deleteAmenities(amenityDelete);
 		
-		return Response.status(200).build();
+		return Response.status(200).entity("Amenity deleted" + am).build();
 	}
 	
 

@@ -10,7 +10,7 @@ $(document).ready(function () {
 	$("#userDiv").show();
 	$("#adminDiv").hide();
 
-	
+
 	allAmenities();
 	$('select').formSelect();
 	$('.datepicker').datepicker();
@@ -113,7 +113,7 @@ function whoIsLoggedIn() {
 		url: 'rest/whoIsLoggedIn',
 		contentType: 'application/json',
 		success: function (user) {
-			
+
 			if (user != undefined) {
 				loggedInUser = user.username;
 
@@ -211,9 +211,9 @@ function whoIsLoggedIn() {
 			} else {
 				console.log("No one is logged in");
 				loadApartmentsForUser();
-					$("#hostDiv").hide();
-					$("#userDiv").show();
-					$("#adminDiv").hide();
+				$("#hostDiv").hide();
+				$("#userDiv").show();
+				$("#adminDiv").hide();
 			}
 
 		}
@@ -298,16 +298,23 @@ function allAmenities() {
 				//console.log("i + amenities[i]");
 				//console.log(i);
 				//console.log(amenity);
-				amenityIds[i] = amenity.id;
-				$("#amenitiesDiv").append(
-					'<div class="col s6">' +
-					' <label>' +
-					' <input id="aId' + amenity.id + '"type="checkbox" />' +
-					'<span>' + amenity.name + '</span>' +
-					' </label>' +
-					'</div>'
 
-				);
+				if (amenity.deleted != true) {
+
+					amenityIds[i] = amenity.id;
+
+
+					$("#amenitiesDiv").append(
+						'<div class="col s6">' +
+						' <label>' +
+						' <input id="aId' + amenity.id + '"type="checkbox" />' +
+						'<span>' + amenity.name + '</span>' +
+						' </label>' +
+						'</div>'
+
+					);
+				}
+
 			}
 			console.log("amenityIds posle fora");
 			console.log(amenityIds);
@@ -356,7 +363,7 @@ function loadApartmentsForUser() {
 
 		if (apartment.status == "ACTIVE") {
 			$("#activeApartmentsListUser").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
-			apartment.id +'">' +'ID:'+ apartment.id + ', '+apartment.locationString + ', hosted by: ' + apartment.host + '</a></li>');
+				apartment.id + '">' + 'ID:' + apartment.id + ', ' + apartment.locationString + ', hosted by: ' + apartment.host + '</a></li>');
 		}
 
 	}
@@ -367,7 +374,7 @@ function loadApartmentsForAdmin() {
 		let apartment = allApartments[i];
 
 		$("#allApartmentsListAdmin").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
-			apartment.id +'">' +'ID:'+ apartment.id + ', '+apartment.locationString + ', hosted by: ' + apartment.host  +'</a></li>');
+			apartment.id + '">' + 'ID:' + apartment.id + ', ' + apartment.locationString + ', hosted by: ' + apartment.host + '</a></li>');
 
 
 	}

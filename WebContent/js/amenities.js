@@ -22,6 +22,8 @@ $(document).ready(function () {
     $('select').formSelect();
     
     whoIsLoggedIn();
+    deleteAmenity();
+
 
     $("#logout").click(function () {
         logOut();
@@ -180,14 +182,14 @@ function allAmenities() {
 
             for (var a of amenities) {
                 if (a.deleted == false) {
-                    Options=Options+"<option value='" + a.name + "'></option>";
+                    Options=Options+"<option value='" + a.name + "'>" + a.name + "</option>";
                 }
             }
 
             
-            $('#selectUser').empty();
-            $('#selectUser').append(Options);
-            $("#selectUser").formSelect();
+            $('#selectAmenity').empty();
+            $('#selectAmenity').append(Options);
+            $("#selectAmenity").formSelect();
 
         },
         error: function (jqXhr, textStatus, errorMessage) {
@@ -203,11 +205,13 @@ function deleteAmenity () {
  
         $.ajax({
             url: 'rest/deleteAmenities/' + name,
-            type: 'PUT',
+            type: 'DELETE',
             success: function () {
-                alert("Amwnity deleted.");
+                alert("Amenity deleted.");
+                //location.reload();
             },
             error: function (jqXhr, textStatus, errorThrown) {
+                alert("Amenity not deleted.");
                 console.log(errorThrown);
             }
         });
