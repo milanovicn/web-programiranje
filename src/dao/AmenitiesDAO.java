@@ -187,12 +187,15 @@ public class AmenitiesDAO {
 		}
 
 	
-		public void deleteAmenities (String amenityDelete) {
+		public Amenities deleteAmenities (String amenityDelete) {
 			for (Amenities a : amenities.values()) {
 				if (a.getName().equals(amenityDelete)) {
 					a.setDeleted(true);
+					saveAmenities();
+					return a;
 				}
 			}
+			return null;
 		}
 		
 		public Amenities findById(Long id) {

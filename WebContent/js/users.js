@@ -238,6 +238,7 @@ function blockUser() {
             type: 'PUT',
             success: function () {
                 alert("UserBlocked");
+                location.reload();
             },
             error: function (jqXhr, textStatus, errorThrown) {
                 console.log(errorThrown);
