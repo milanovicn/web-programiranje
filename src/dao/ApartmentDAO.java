@@ -27,8 +27,11 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import Decoder.BASE64Decoder;
 import beans.Amenities;
 import beans.Apartment;
+import beans.Comment;
 import beans.Location;
+import beans.Reservation;
 import beans.User;
+import beans.enums.ApartmentStatus;
 import beans.enums.UserRole;
 
 
@@ -168,6 +171,9 @@ public class ApartmentDAO {
 		
 		public Apartment addApartment(Apartment a) {
 			a.setId(apartments.size()+1);
+			a.setStatus(ApartmentStatus.ACTIVE);
+			a.setReservations(new ArrayList<Reservation>());
+			a.setComments(new ArrayList<Comment>());
 			//slika
 			ArrayList<String> newImages = new ArrayList<String>();
 			
@@ -219,6 +225,17 @@ public class ApartmentDAO {
 	        }
 	        return image;
 	    }
+
+
+		public Apartment findById(Long apartmentId) {
+			for (Apartment a : apartments.values()) {
+				if (a.getId() == apartmentId) {
+					return a;
+				}
+			}
+
+			return null;
+		}
 		
 		
 	
