@@ -7,8 +7,8 @@ import beans.enums.ReservationStatus;
 public class Reservation {
 
 	private long apartmentId;
-	private LocalDateTime startDate;
-	private LocalDateTime endDate;
+	private String startDate;
+	private String endDate;
 	private int stays;
 	private double cost = 0; // potrebno je setovati cenu u servisu (nakon izvlacenja cene po nocenju iz odgovarajuceg apartmana)
 	private String message;
@@ -21,14 +21,14 @@ public class Reservation {
 		
 	}
 	
-	public Reservation(long apartmentId, LocalDateTime startDate, int stays, String message, String guest) {
+	public Reservation(long apartmentId, String startDate, int stays, String message, String guest) {
 		super();
 		this.apartmentId = apartmentId;
 		this.startDate = startDate;
 		this.stays = stays;
 		this.message = message;
 		this.guest = guest;
-		this.endDate = startDate.plusDays(stays);
+		//this.endDate = startDate.plusDays(stays);
 		this.status = ReservationStatus.CREATED;
 		
 	}
@@ -40,16 +40,16 @@ public class Reservation {
 	public void setApartmentId(long apartmentId) {
 		this.apartmentId = apartmentId;
 	}
-	public LocalDateTime getStartDate() {
+	public String getStartDate() {
 		return startDate;
 	}
-	public void setStartDate(LocalDateTime startDate) {
+	public void setStartDate(String startDate) {
 		this.startDate = startDate;
 	}
-	public LocalDateTime getEndDate() {
+	public String getEndDate() {
 		return endDate;
 	}
-	public void setEndDate(LocalDateTime endDate) {
+	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
 	public int getStays() {

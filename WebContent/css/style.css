@@ -57,22 +57,8 @@ footer.page-footer {
 }
 
 p {
-  
   color: darkslategrey !important;
-  padding: 1em 1.5em !important;
   text-decoration: none !important;
-  
 }
-
-
-
-
-
-p:hover {
-  color: darkcyan !important;
-  cursor: pointer !important;
-}
-
-
 
 

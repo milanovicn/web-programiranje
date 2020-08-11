@@ -8,6 +8,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -33,6 +35,7 @@ import beans.Reservation;
 import beans.User;
 import beans.enums.ApartmentStatus;
 import beans.enums.UserRole;
+import utils.TimeInterval;
 
 
 public class ApartmentDAO {
@@ -90,6 +93,8 @@ public class ApartmentDAO {
 
 				TypeFactory factory = TypeFactory.defaultInstance();
 				MapType type = factory.constructMapType(HashMap.class, String.class, Apartment.class);
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+				objectMapper.setDateFormat(df);
 				objectMapper.getFactory().configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);
 				apartments = (HashMap<Long, Apartment>) objectMapper.readValue(file, type);
 			} catch (FileNotFoundException fnf) {
@@ -97,6 +102,8 @@ public class ApartmentDAO {
 					file.createNewFile();
 					fileWriter = new FileWriter(file);
 					ObjectMapper objectMapper = new ObjectMapper();
+					DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+					objectMapper.setDateFormat(df);
 					objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 					objectMapper.getFactory().configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);
 					String usersToString = objectMapper.writeValueAsString(apartments);
@@ -140,6 +147,8 @@ public class ApartmentDAO {
 			try {
 				fileWriter = new FileWriter(file);
 				ObjectMapper objectMapper = new ObjectMapper();
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+				objectMapper.setDateFormat(df);
 				objectMapper.configure(SerializationFeature.INDENT_OUTPUT, false);
 				objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 				// Through the configure method we can extend the default process to ignore the
@@ -236,7 +245,20 @@ public class ApartmentDAO {
 
 			return null;
 		}
-		
+
+
+		public void addReservation(Reservation res, TimeInterval resInterval) {
+			for (Apartment a : apartments.values()) {
+				if (a.getId() == res.getApartmentId()) {
+					a.setFreeDates(resInterval.updateFreeDates(resInterval, a.getFreeDates()));
+					a.getReservations().add(res);
+					a.getReservedDates().add(resInterval);
+					saveApartments();
+				}
+			}
+		}
+
+
 		
 	
 	

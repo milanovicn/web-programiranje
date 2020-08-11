@@ -1,7 +1,11 @@
 package services;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
@@ -23,10 +27,13 @@ import beans.Amenities;
 import beans.Apartment;
 import beans.Reservation;
 import beans.User;
+import beans.enums.ReservationStatus;
 import beans.enums.UserRole;
 import dao.AmenitiesDAO;
 import dao.ApartmentDAO;
+import dao.ReservationDAO;
 import dao.UserDAO;
+import utils.TimeInterval;
 
 @Path("")
 public class Services {
@@ -55,12 +62,16 @@ public class Services {
 			String contextPath2 = ctx.getRealPath("");
 			ctx.setAttribute("apartmentDAO", new ApartmentDAO(contextPath2));
 		}
-		
+
 		if (ctx.getAttribute("amenitiesDAO") == null) {
-	    	String contextPath3 = ctx.getRealPath("");
-			ctx.setAttribute("amenitiesDAO", new AmenitiesDAO (contextPath3));
-		}	
-	
+			String contextPath3 = ctx.getRealPath("");
+			ctx.setAttribute("amenitiesDAO", new AmenitiesDAO(contextPath3));
+		}
+
+		if (ctx.getAttribute("reservationDAO") == null) {
+			String contextPath4 = ctx.getRealPath("");
+			ctx.setAttribute("reservationDAO", new ReservationDAO(contextPath4));
+		}
 
 	}
 
@@ -217,6 +228,24 @@ public class Services {
 			a.getAmenities().add(foundAmenity);
 		}
 		
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date endDate = new Date();
+		Date startDate = new Date();
+		
+		try{
+			//Setting the date to the given date
+			startDate = formatter.parse(a.getStartDate());
+		}catch(ParseException e){
+			e.printStackTrace();
+		}
+		try{
+			//Setting the date to the given date
+			endDate = formatter.parse(a.getEndDate());
+		}catch(ParseException e){
+			e.printStackTrace();
+		}
+		
+		a.getFreeDates().add(new TimeInterval(startDate, endDate));
 		
 		//formating images strings
 		for(int i = 0; i<a.getImages().size(); i++ ) {
@@ -249,7 +278,7 @@ public class Services {
 
 		return apartments.findAll();
 	}
-	
+
 	@GET
 	@Path("/getApartmentById/{apartmentId}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -257,52 +286,175 @@ public class Services {
 
 		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
 		Apartment ret = apartments.findById(apartmentId);
-	
-		
+
 		return ret;
 	}
-	
+
 	@GET
 	@Path("/getAllAmenities")
 	@Produces(MediaType.APPLICATION_JSON)
-	public  Collection<Amenities> getAllAmenities(@Context HttpServletRequest request) {
-		
-		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");	
+	public Collection<Amenities> getAllAmenities(@Context HttpServletRequest request) {
+
+		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
 
 		return amenities.findAll();
 	}
-	 
-	
+
 	@POST
 	@Path("/addAmenities")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	
-	public Response addAmenities (Amenities a) {
-			
+
+	public Response addAmenities(Amenities a) {
+
 		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
-						
+
 		Amenities amenity = amenities.addAmenities(a);
-		
-		if(amenity == null) {
+
+		if (amenity == null) {
 			return Response.status(400).entity("Amenity already exists").build();
 		}
-		
+
 		return Response.status(200).build();
 	}
-	
-	
+
 	@DELETE
 	@Path("/deleteAmenities/{amenityDelete}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteAmenities(@PathParam("amenityDelete") String amenityDelete) {
-		
+
 		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
-				
+
 		Amenities am = amenities.deleteAmenities(amenityDelete);
-		
+
 		return Response.status(200).entity("Amenity deleted" + am).build();
 	}
+
+	@GET
+	@Path("/getAllReservations")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Reservation> getAllReservations(@Context HttpServletRequest request) {
+
+		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
+
+		return reservationsDAO.findAll();
+	}
+
+	@POST
+	@Path("/addReservation")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response addReservation(Reservation res, @Context HttpServletRequest request) {
+
+		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
+
+		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+		Apartment apartment = apartments.findById(res.getApartmentId());
+
+		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
+		HttpSession session = request.getSession();
+		User guest = (User) session.getAttribute("user");
+
+		res.setCost(res.getStays() * apartment.getPrice());
+		res.setGuest(guest.getUsername());
+		res.setStatus(ReservationStatus.CREATED);
+		
+		// setting end date
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+		Calendar c = Calendar.getInstance();
+		try {
+			c.setTime(formatter.parse(res.getStartDate()));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		c.add(Calendar.DAY_OF_MONTH, res.getStays());
+		String endDateString = formatter.format(c.getTime());
+		res.setEndDate(endDateString);
+
+
+		//saving reservation
+		Date endDate = new Date();
+		Date startDate = new Date();
+		
+		try{
+			startDate = formatter.parse(res.getStartDate());
+		}catch(ParseException e){
+			e.printStackTrace();
+		}
+		try{
+			endDate = formatter.parse(res.getEndDate());
+		}catch(ParseException e){
+			e.printStackTrace();
+		}
+		
+		
+		//check if end date of reservation is not greater than end date of apartment
+		Date endDateApartment = new Date();
+		Date startDateApartment = new Date();
+		try{
+			endDateApartment = formatter.parse(apartment.getEndDate());
+		}catch(ParseException e){
+			e.printStackTrace();
+		}
+		try{
+			startDateApartment = formatter.parse(apartment.getStartDate());
+		}catch(ParseException e){
+			e.printStackTrace();
+		}
+		
+		if (endDate.after(endDateApartment)) {
+			return Response.status(400).entity("Reservation exceeding apartment rent time!").build();
+		}
+		if (startDate.before(startDateApartment)) {
+			return Response.status(400).entity("Reservation exceeding apartment rent time!").build();
+		}
+		
+		TimeInterval resInterval = new TimeInterval(startDate, endDate);
+		Reservation ret = reservationsDAO.addReservation(res, resInterval, apartment.getReservedDates());
+		System.out.println("RET:" + ret);
+		if (ret == null) {
+			return Response.status(400).entity("Reservation couldn't be created, choose valid time!").build();
+		}
+		
+		//adding reservation to apartment
+		apartments.addReservation(ret, resInterval);
+		
+		//adding reservation to guest user
+		users.addToMyReservations(guest.getUsername(), ret);
+		
+		return Response.status(200).entity("Reservation created").build();
+	}
 	
+	@GET
+	@Path("/getAllReservationsUser")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Reservation> getAllReservationsUser(@Context HttpServletRequest request) {
+
+		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
+		HttpSession session = request.getSession();
+		User guest = (User) session.getAttribute("user");
+
+		return guest.getMyReservations();
+	}
+	
+	@PUT
+	@Path("/cancelReservation/{apartmentId}/{startDate}/{endDate}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Reservation getAllReservationsUser(@PathParam ("apartmentId") Long apartmentId, @PathParam ("startDate") String startDate,
+			@PathParam ("endDate") String endDate, @Context HttpServletRequest request) {
+
+		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
+		Reservation ret = reservationsDAO.cancelReservation(apartmentId, startDate, endDate);
+		
+		//update status in guest list of reservations
+		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
+		HttpSession session = request.getSession();
+		User guest = (User) session.getAttribute("user");
+		users.updateReservationStatus(guest.getUsername(), ret);
+		
+
+		return ret;
+	}
 
 }
