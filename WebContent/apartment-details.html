@@ -56,9 +56,8 @@
             <h6 id="checkInDet">Check in by: </h6>
             <h6 id="checkOutDet">Check out by: </h6>
             <h6 id="amenitiesDet">Amenities available: </h6>
-            <h6 id="availableDatesDet">Dates available: </h6>
             <h6 id="hostDet">Hosted by: </h6>
-            <h6 >Images: </h6>
+            <h6>Images: </h6>
             <div id="gallery"></div>
             <img id="previewImage" src="#" alt="" width="200" height="200" />
 
@@ -66,9 +65,49 @@
     </div>
 
     <!--User div - making reservations-->
+    <div id="userDiv">
+        <div class="row ">
+            <h5 class="header col s4 dark grey-text text-darken-3 ">Make a Reservation
+                <a class="btn-floating  waves-effect waves-light" id="showReservationDiv"><i
+                        class="material-icons">add</i></a>
+            </h5>
+        </div>
+        <div id="reservationDiv">
+            
+            <h6 id="availableDatesDet">Dates available: </h6>
+            <div class="row  s6 15 offset-12" style="margin-top: 20px;">
+                <form class="col " id="createReservationForm">
+                    
+                    <div class="input-field col s6">
+                        <input id="startDate" name="startDate" type="text" class="validate datepicker" required>
+                        <label for="startDate">Date</label>
+                    </div>
+
+                    <div class="input-field col s6">
+                        <input id="stays" name="stays" type="number" class="validate" required>
+                        <label for="stays">Stays</label>
+                    </div>
+
+                    <div class="input-field col s12">
+                        <input id="message" name="message" type="text" class="validate" required>
+                        <label for="message">Message</label>
+                    </div>
+
+                    <button class="btn waves-effect waves-light " type="submit" value="Register" name="register">Submit
+                        <i class="material-icons right">send</i>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+
+
+
+    </div>
+
 
     <!--Host and Admin div - delete and edit-->
-    
+
     <!--Comments-->
 
     <!--  Scripts-->

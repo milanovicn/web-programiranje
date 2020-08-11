@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -19,7 +20,9 @@ import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import beans.Apartment;
+import beans.Reservation;
 import beans.User;
+import beans.enums.ReservationStatus;
 import beans.enums.UserRole;
 
 public class UserDAO {
@@ -250,5 +253,29 @@ public class UserDAO {
 		
 	}
 	
+	public void addToMyReservations(String guest, Reservation r) {
+		for (User u : users.values()) {
+			if (u.getUsername().equals(guest)) {
+				u.getMyReservations().add(r);
+				saveUsers();
+			}
+		}
+		
+	}
+
+	public void updateReservationStatus(String username, Reservation ret) {
+		for (User u : users.values()) {
+			if (u.getUsername().equals(username)) {
+				for (Reservation r : u.getMyReservations()) {
+					if(r.getApartmentId()==ret.getApartmentId() && r.getStartDate().equals(ret.getStartDate()) && r.getEndDate().equals(ret.getEndDate())) {
+						r.setStatus(ret.getStatus());
+						saveUsers();		
+						return;
+					}			
+				}		
+			}
+		}
+		
+	}
 	
 }

@@ -76,17 +76,7 @@ $(function () {
 
 
 				reader.onloadend = function (event) {
-					//for (j = 0; j < filesAmount; j++) {
-					//	console.log("j ");
-					//	console.log(j);
-					//	image2[j] = event.target.result;
-
-					//}
-
 					$($.parseHTML('<img>')).attr({ 'src': event.target.result, 'height': 200 }).appendTo(placeToInsertImagePreview);
-					//console.log("i etr");
-					//console.log(i);
-					//console.log(event.target.result);
 					image2[i] = event.target.result;
 				}
 
@@ -243,8 +233,12 @@ function saveApartment() {
 	var rooms = $('input[name="rooms"]').val();
 	var capacity = $('input[name="capacity"]').val();
 	var price = $('input[name="price"]').val();
-	var startDate = $('input[name="startDate"]').val();
-	var endDate = $('input[name="endDate"]').val();
+	var startDateStr = $("#startDate").datepicker({ dateFormat: 'yyyy-MM-dd' }).val();
+	var startDate1 = formatDateISO(startDateStr);
+	var startDate = JSON.parse(JSON.stringify(startDate1));
+	var endDateStr = $("#endDate").datepicker({ dateFormat: 'yyyy-MM-dd' }).val();
+	var endDate1 = formatDateISO(endDateStr);
+	var endDate = JSON.parse(JSON.stringify(endDate1));
 	var checkIn = $('input[name="checkIn"]').val();
 	var checkOut = $('input[name="checkOut"]').val();
 	var latitude = $('input[name="latitude"]').val();
@@ -258,18 +252,11 @@ function saveApartment() {
 	//generating string of chosen amenities
 	var amenitiesString = "";
 	for (let i = 0; i < amenityIds.length; i++) {
-		console.log("usao u for sledeci if");
 		if (($("#aId" + amenityIds[i]).is(":checked")) == true) {
 			amenitiesString += amenityIds[i] + ",";
-			console.log("i + id + amString");
-			console.log(i);
-			console.log(amenityIds[i]);
-			console.log(amenitiesString);
 		}
 	}
 
-	console.log("amenitiesString pre posta");
-	console.log(amenitiesString);
 	$.post({
 		url: 'rest/createApartment',
 		data: JSON.stringify({ type, rooms, capacity, startDate, endDate, checkIn, checkOut, price, locationString, images, amenitiesString }),
@@ -291,18 +278,11 @@ function allAmenities() {
 		url: 'rest/getAllAmenities',
 		contentType: 'application/json',
 		success: function (amenities) {
-			console.log(amenities);
+		
 			for (let i = 0; i < amenities.length; i++) {
-
 				let amenity = amenities[i];
-				//console.log("i + amenities[i]");
-				//console.log(i);
-				//console.log(amenity);
-
 				if (amenity.deleted != true) {
-
 					amenityIds[i] = amenity.id;
-
 
 					$("#amenitiesDiv").append(
 						'<div class="col s6">' +
@@ -316,8 +296,6 @@ function allAmenities() {
 				}
 
 			}
-			console.log("amenityIds posle fora");
-			console.log(amenityIds);
 
 		},
 		error: function (jqXhr, textStatus, errorMessage) {
@@ -378,4 +356,47 @@ function loadApartmentsForAdmin() {
 
 
 	}
+}
+
+function formatDateISO(dateToFormat) {
+	var returnValue = "";
+	var splited = dateToFormat.split(" ");
+	var month = splited[0];
+	var year = splited[2];
+	var day = splited[1];
+	day = day.replace(",", "");
+	returnValue = year+"-";
+	
+	if(month == "Jan"){
+		returnValue += "01-";
+	}else if(month == "Feb"){
+		returnValue += "02-";
+	}else if(month == "Mar"){
+	returnValue += "03-";
+	}else if(month == "Apr"){
+	returnValue += "04-";	
+	}else if(month == "May"){
+		returnValue += "05-";
+	}else if(month == "Jun"){
+		returnValue += "06-";
+	}else if(month == "Jul"){
+		returnValue += "07-";
+	}else if(month == "Aug"){
+		returnValue += "08-";
+	}else if(month == "Sep"){
+		returnValue += "09-";
+	}else if(month == "Oct"){
+		returnValue += "10-";
+	}else if(month == "Nov"){
+		returnValue += "11-";
+	}else if(month == "Dec"){
+		returnValue += "12-";
+	} else{
+		returnValue += "1-";
+	}
+	
+	returnValue +=day;
+
+	return returnValue;
+
 }

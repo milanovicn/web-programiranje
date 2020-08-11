@@ -13,6 +13,8 @@ $(document).ready(function () {
 	$('.datepicker').datepicker();
 	$('.timepicker').timepicker();
 
+	$("#userDiv").hide();
+
 	$("#login").show();
 	$("#register").show();
 	$("#apartments").show();
@@ -50,6 +52,18 @@ $(document).ready(function () {
     //$("#createForm").submit(function (event) {
 	//	saveApartment();
 	//});
+
+	
+	$("#reservationDiv").hide();
+	$("#showReservationDiv").click(function () {
+		$("#reservationDiv").toggle();
+	});
+
+
+	$("#createReservationForm").submit(function (event) {
+		createReservation();
+
+	});
 });
 
 function whoIsLoggedIn() {
@@ -64,7 +78,7 @@ function whoIsLoggedIn() {
 				if (user.role == "GUEST") {
 					
 					//$("#hostDiv").hide();
-					//$("#userDiv").show();
+					$("#userDiv").show();
 					//$("#adminDiv").hide();
 
 					$("#login").hide();
@@ -75,8 +89,6 @@ function whoIsLoggedIn() {
 					$("#reservations").show();
 					$("#users").hide();
 					$("#logout").show();
-
-
 
 					$("#loginM").hide();
 					$("#registerM").hide();
@@ -92,7 +104,7 @@ function whoIsLoggedIn() {
 				} else if (user.role == "ADMIN") {
 					
 					//$("#hostDiv").hide();
-					//$("#userDiv").hide();
+					$("#userDiv").hide();
 					//$("#adminDiv").show();
 
 
@@ -119,7 +131,7 @@ function whoIsLoggedIn() {
 
 				} else if (user.role == "HOST") {
 					//$("#hostDiv").show();
-					//$("#userDiv").hide();
+					$("#userDiv").hide();
 					//$("#adminDiv").hide();
 
 					$("#login").hide();
@@ -190,36 +202,101 @@ function loadApartmentDetails() {
             $("#checkInDet").append(apartment.checkIn);
             $("#checkOutDet").append(apartment.checkOut);
             $("#hostDet").append(apartment.host);
-            //slobodni datumi fale <3
-            let amenities = apartment.amenities;
-            console.log("amenities");
-            var duzina = Object.keys(amenities).length
-            console.log(duzina);
-
-            for( i = 0; i < duzina; i++){
-                console.log("uso for amenities");
+           
+            let amenities = apartment.amenities;            
+            var lenght1 = Object.keys(amenities).length
+            for( i = 0; i < lenght1; i++){
                 $("#amenitiesDet").append( amenities[i].name+" ");
             }
 
            
-
             let images = apartment.images;
-            console.log("images");
-            console.log(images);
-            var duzina2 = Object.keys(images).length
-            console.log(duzina2);
-            for(let i=0; i<duzina2; i++){
-                
-                console.log("uso for images");
-                //images[i].replace("\\", "/");
-                console.log("Image [i]");
-                console.log(images[i]);
+            var lenght2 = Object.keys(images).length
+            for(let i=0; i<lenght2; i++){
                 $("#gallery").append('<img src="'+ images[i] +'" height="200"></img>');
+			}
+			
+			let freeDates = apartment.freeDates;            
+            var lenght3 = Object.keys(freeDates).length
+            for( i = 0; i < lenght3; i++){
+				var date11 = freeDates[i].start;
+				var date1 = new Date(date11);
+				
+
+                $("#availableDatesDet").append('<p>' + freeDates[i].startString+" - " +  freeDates[i].endString + '</p>');
             }
+
 		},
 		error: function (jqXhr, textStatus, errorMessage) {
 			console.log(errorMessage);
 		}
 	});
+
+}
+
+function createReservation() {
+    event.preventDefault();
+
+    var message = $('input[name="message"]').val();
+    var stays = $('input[name="stays"]').val();
+	var startDateStr = $("#startDate").datepicker({ dateFormat: 'yyyy-MM-dd' }).val();
+	var startDate1 = formatDateISO(startDateStr);
+	var startDate = JSON.parse(JSON.stringify(startDate1));
+   
+        $.post({
+            url: 'rest/addReservation',
+            data: JSON.stringify({ message, stays, startDate, apartmentId}),
+            contentType: 'application/json',
+            success: function () {
+                alert("Reservation created");
+                location.reload();
+            },
+            error: function () {
+                alert("Reservation not created. Choose valid dates!");
+            }
+        });
+  
+
+}
+
+function formatDateISO(dateToFormat) {
+	var returnValue = "";
+	var splited = dateToFormat.split(" ");
+	var month = splited[0];
+	var year = splited[2];
+	var day = splited[1];
+	day = day.replace(",", "");
+	returnValue = year+"-";
+	
+	if(month == "Jan"){
+		returnValue += "01-";
+	}else if(month == "Feb"){
+		returnValue += "02-";
+	}else if(month == "Mar"){
+	returnValue += "03-";
+	}else if(month == "Apr"){
+	returnValue += "04-";	
+	}else if(month == "May"){
+		returnValue += "05-";
+	}else if(month == "Jun"){
+		returnValue += "06-";
+	}else if(month == "Jul"){
+		returnValue += "07-";
+	}else if(month == "Aug"){
+		returnValue += "08-";
+	}else if(month == "Sep"){
+		returnValue += "09-";
+	}else if(month == "Oct"){
+		returnValue += "10-";
+	}else if(month == "Nov"){
+		returnValue += "11-";
+	}else if(month == "Dec"){
+		returnValue += "12-";
+	} else{
+		returnValue += "1-";
+	}
+	
+	returnValue +=day;
+	return returnValue;
 
 }

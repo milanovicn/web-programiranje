@@ -2,10 +2,13 @@ package beans;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 
 import beans.enums.ApartmentStatus;
 import beans.enums.ApartmentType;
+import utils.TimeInterval;
 
 public class Apartment {
 
@@ -15,8 +18,8 @@ public class Apartment {
 	private int capacity;
 	private Location location = new Location();
 	private String locationString = "";
-	private String startDate;
-	private String endDate;
+	private String  startDate;
+	private String  endDate;
 	private String host;
 	private double price;
 	private String checkIn = "2PM";
@@ -29,9 +32,10 @@ public class Apartment {
 	private ArrayList<Amenities> amenities = new ArrayList<Amenities>();
 	private ArrayList<Reservation> reservations = new ArrayList<Reservation>();
 	private ArrayList<Comment> comments = new ArrayList<Comment>();
+	
 	//lista dostupnosti
-	//slike
-		
+	private ArrayList<TimeInterval> freeDates = new ArrayList<TimeInterval>();
+	private ArrayList<TimeInterval> reservedDates = new ArrayList<TimeInterval>();
 	
 	
 	public Apartment() {
@@ -60,22 +64,20 @@ public class Apartment {
 		this.location = new Location(locationInfo[0], locationInfo[1],
 				locationInfo[2], locationInfo[3], locationInfo[4], locationInfo[5]);
 		
+		
 	}
 	
 	
 
-	
-	
 	@Override
 	public String toString() {
 		return "Apartment [id=" + id + ", type=" + type + ", rooms=" + rooms + ", capacity=" + capacity + ", location="
 				+ location + ", locationString=" + locationString + ", startDate=" + startDate + ", endDate=" + endDate
 				+ ", host=" + host + ", price=" + price + ", checkIn=" + checkIn + ", checkOut=" + checkOut
-				+ ", status=" + status + ", deleted=" + deleted + ", images=" + images + ", amenities=" + amenities
-				+ ", reservations=" + reservations + ", comments=" + comments +  ", amenitiesString=" + amenitiesString +"]";
+				+ ", status=" + status + ", deleted=" + deleted + ", images=" + images + ", amenitiesString="
+				+ amenitiesString + ", amenities=" + amenities + ", reservations=" + reservations + ", comments="
+				+ comments + ", freeDates=" + freeDates + ", reservedDates=" + reservedDates + "]";
 	}
-	
-	
 	public String getAmenitiesString() {
 		return amenitiesString;
 	}
@@ -118,16 +120,16 @@ public class Apartment {
 	public void setLocation(Location location) {
 		this.location = location;
 	}
-	public String getStartDate() {
+	public String  getStartDate() {
 		return startDate;
 	}
-	public void setStartDate(String startDate) {
+	public void setStartDate(String  startDate) {
 		this.startDate = startDate;
 	}
-	public String getEndDate() {
+	public String  getEndDate() {
 		return endDate;
 	}
-	public void setEndDate(String endDate) {
+	public void setEndDate(String  endDate) {
 		this.endDate = endDate;
 	}
 	public String getHost() {
@@ -190,6 +192,19 @@ public class Apartment {
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
 	}
+	public ArrayList<TimeInterval> getFreeDates() {
+		return freeDates;
+	}
+	public void setFreeDates(ArrayList<TimeInterval> freeDates) {
+		this.freeDates = freeDates;
+	}
+	public ArrayList<TimeInterval> getReservedDates() {
+		return reservedDates;
+	}
+	public void setReservedDates(ArrayList<TimeInterval> reservedDates) {
+		this.reservedDates = reservedDates;
+	}
+
 	
 	
 }
