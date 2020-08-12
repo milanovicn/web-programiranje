@@ -153,7 +153,7 @@ function logOut() {
 		url: 'rest/logOut',
 		success: function () {
 			alert("Log out successful");
-			window.location = "./home.html";
+			window.location = "./login.html";
 		},
 		error: function (jqXhr, textStatus, errorMessage) {
 			console.log("Error: ", errorMessage);

@@ -155,7 +155,7 @@ function logOut() {
         url: 'rest/logOut',
         success: function () {
             //alert("Uspešno ste se odjavili");
-            window.location = "./home.html";
+            window.location = "./login.html";
         },
         error: function (jqXhr, textStatus, errorMessage) {
             console.log("Error: ", errorMessage);
