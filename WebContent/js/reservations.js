@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	//$("#hostDiv").hide();
+	$("#hostDiv").hide();
 	$("#userDiv").show();
 	$("#adminDiv").hide();
 
@@ -50,7 +50,7 @@ function whoIsLoggedIn() {
 
 				if (user.role == "GUEST") {
 					loadReservationsForUser();
-					//$("#hostDiv").hide();
+					$("#hostDiv").hide();
 					$("#userDiv").show();
 					$("#adminDiv").hide();
 
@@ -76,7 +76,7 @@ function whoIsLoggedIn() {
 
 				} else if (user.role == "ADMIN") {
 					loadReservationsForAdmin();
-					//$("#hostDiv").hide();
+					$("#hostDiv").hide();
 					$("#userDiv").hide();
 					$("#adminDiv").show();
 
@@ -103,7 +103,8 @@ function whoIsLoggedIn() {
 					console.log(user);
 
 				} else if (user.role == "HOST") {
-					//$("#hostDiv").show();
+					loadReservationsForHost();
+					$("#hostDiv").show();
 					$("#userDiv").hide();
 					$("#adminDiv").hide();
 
@@ -238,12 +239,108 @@ function cancelReservation(reservation) {
         type: 'PUT',
         success: function () {
             alert("Reservation canceled");
-            //location.reload();
+            location.reload();
         },
         error: function () {
             alert("Reservation not canceled");
-            //location.reload();
+            location.reload();
         }
     });
     }
 }
+
+
+function loadReservationsForHost() {
+
+    $.get({
+		url: 'rest/getAllReservationsHost',
+		contentType: 'application/json',
+		success: function (reservations) {
+            var allReservations = reservations;
+
+            for (let i = 0; i < allReservations.length; i++) {
+                let reservation = allReservations[i];
+                var htmlCode = '<div style="margin-top: 50px" class="col s12"><ul class="collection with-header" >'
+                + '<li class="collection-item grey-text text-darken-3" >Dates: ' + reservation.startDate+ ', ' + reservation.endDate + '</li>'
+				+ '<li class="collection-item grey-text text-darken-3" >Apartment id: ' + reservation.apartmentId + '</li>'
+				+ '<li class="collection-item grey-text text-darken-3" >Guest: ' + reservation.guest + '</li>'
+                + '<li class="collection-item grey-text text-darken-3" >Message: ' + reservation.message + '</li>'
+                + '<li class="collection-item grey-text text-darken-3" >Stays: ' + reservation.stays + '</li>'
+                + '<li class="collection-item grey-text text-darken-3" >Cost: ' + reservation.cost + '</li>' 
+                + '<li class="collection-item grey-text text-darken-3" >Status: ' + reservation.status + '</li></ul>';
+
+                if(reservation.status == "CREATED"){
+                    var btnAccept = $('</div><div class="col s6"><button id="acceptReservation" class="btn waves-effect waves-light light-blue ">Accept<i class="material-icons right">send</i></button></div>');
+					btnAccept.click(acceptReservation(reservation));
+					var btnReject = $('</div><div class="col s6"><button id="rejectReservation" class="btn waves-effect waves-light light-blue ">Reject<i class="material-icons right">send</i></button></div>');
+                    btnReject.click(rejectReservation(reservation));
+					
+					$("#allReservationsHost").append(htmlCode).append(btnAccept).append(btnReject).append('</div>');
+                } else if(reservation.status == "ACCEPTED"){
+                    var btnEnd= $('</div><div class="col s12"><button id="endReservation" class="btn waves-effect waves-light light-blue ">End<i class="material-icons right">send</i></button></div>');
+					btnEnd.click(endReservation(reservation));
+					
+					$("#allReservationsHost").append(htmlCode).append(btnEnd).append('</div>');
+                } else {
+                    $("#allReservationsHost").append(htmlCode).append('</div>');
+                }
+            }
+
+		},
+		error: function (jqXhr, textStatus, errorMessage) {
+			console.log(errorMessage);
+		}
+	});
+}
+
+function acceptReservation(reservation) { 
+    return function() {
+    $.ajax({
+        url: 'rest/acceptReservation/' + reservation.apartmentId  + "/" + reservation.startDate  + "/" + reservation.endDate,
+        type: 'PUT',
+        success: function () {
+            alert("Reservation accepted");
+            location.reload();
+        },
+        error: function () {
+            alert("Reservation not accepted");
+            location.reload();
+        }
+    });
+    }
+}
+
+function rejectReservation(reservation) { 
+    return function() {
+    $.ajax({
+        url: 'rest/rejectReservation/' + reservation.apartmentId  + "/" + reservation.startDate  + "/" + reservation.endDate,
+        type: 'PUT',
+        success: function () {
+            alert("Reservation rejected");
+            location.reload();
+        },
+        error: function () {
+            alert("Reservation not rejected");
+            location.reload();
+        }
+    });
+    }
+}
+
+function endReservation(reservation) { 
+    return function() {
+    $.ajax({
+        url: 'rest/endReservation/' + reservation.apartmentId  + "/" + reservation.startDate  + "/" + reservation.endDate,
+        type: 'PUT',
+        success: function () {
+            alert("Reservation ended");
+            location.reload();
+        },
+        error: function () {
+            alert("Reservation not ended, reservation time has to finish!");
+            location.reload();
+        }
+    });
+    }
+}
+

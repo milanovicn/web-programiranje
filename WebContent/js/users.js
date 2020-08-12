@@ -1,4 +1,8 @@
 $(document).ready(function () {
+    $("#adminDiv").hide();
+    $("#hostDiv").hide();
+
+    
     $("#login").show();
     $("#register").show();
     $("#apartments").show();
@@ -7,8 +11,6 @@ $(document).ready(function () {
     $("#reservations").hide();
     $("#users").hide();
     $("#logout").hide();
-    $("#adminDiv").hide();
-
 
     $("#loginM").show();
     $("#registerM").show();
@@ -58,6 +60,7 @@ function whoIsLoggedIn() {
             if (user != undefined) {
                 if (user.role == "GUEST") {
                     $("#adminDiv").hide();
+                     $("#hostDiv").hide();
 
                     $("#login").hide();
                     $("#register").hide();
@@ -82,6 +85,7 @@ function whoIsLoggedIn() {
                 } else if (user.role == "ADMIN") {
                     allUsers();
                     $("#adminDiv").show();
+                    $("#hostDiv").hide();
 
                     $("#login").hide();
                     $("#register").hide();
@@ -105,7 +109,9 @@ function whoIsLoggedIn() {
                     console.log(user);
 
                 } else if (user.role == "HOST") {
+                    allUsersHost();
                     $("#adminDiv").hide();
+                    $("#hostDiv").show();
                    
                     $("#login").hide();
                     $("#register").hide();
@@ -196,11 +202,11 @@ function allUsers() {
         success: function (users) {
 
             for (var user of users) {
-                $("#allUsersList").append('<div class="row"><ul class="collection with-header" ><li class="collection-header"> <h5 class="grey-text" id="usernameLi">Username: ' + user.username + '  </h5></li>'
-                    + '<li class="collection-item grey-text" >Role: ' + user.role + '</li>'
-                    + '<li class="collection-item grey-text" >Gender: ' + user.gender + '</li>'
-                    + '<li class="collection-item grey-text" >Name: ' + user.name + '</li>'
-                    + '<li class="collection-item grey-text" >Lastname: ' + user.lastname + '</li>' + '</ul></div>');
+                $("#allUsersList").append('<div class="row"><ul class="collection with-header" ><li class="collection-header"> <h6 class="grey-text" id="usernameLi">Username: ' + user.username + '  </h6></li>'
+                    + '<li class="collection-item grey-text text-darken-3" >Role: ' + user.role + '</li>'
+                    + '<li class="collection-item grey-text text-darken-3" >Gender: ' + user.gender + '</li>'
+                    + '<li class="collection-item grey-text text-darken-3" >Name: ' + user.name + '</li>'
+                    + '<li class="collection-item grey-text text-darken-3" >Lastname: ' + user.lastname + '</li>' + '</ul></div>');
 
             }
 
@@ -244,5 +250,26 @@ function blockUser() {
                 console.log(errorThrown);
             }
         });
+    });
+}
+
+function allUsersHost() {
+    $.get({
+        url: 'rest/getAllUsersHost',
+        contentType: 'application/json',
+        success: function (users) {
+
+            for (var user of users) {
+                $("#allUsersListHost").append('<div class="row"><ul class="collection with-header" ><li class="collection-header"> <h6 class="grey-text" id="usernameLi">Username: ' + user.username + '  </h6></li>'
+                    + '<li class="collection-item grey-text text-darken-3" >Role: ' + user.role + '</li>'
+                    + '<li class="collection-item grey-text text-darken-3" >Gender: ' + user.gender + '</li>'
+                    + '<li class="collection-item grey-text text-darken-3" >Name: ' + user.name + '</li>'
+                    + '<li class="collection-item grey-text text-darken-3" >Lastname: ' + user.lastname + '</li>' + '</ul></div>');
+
+            }
+        },
+        error: function (jqXhr, textStatus, errorMessage) {
+            console.log(errorMessage);
+        }
     });
 }

@@ -456,5 +456,124 @@ public class Services {
 
 		return ret;
 	}
+	
+	@GET
+	@Path("/getAllReservationsHost")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Reservation> getAllReservationsHost(@Context HttpServletRequest request) {
 
+		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
+		HttpSession session = request.getSession();
+		User host = (User) session.getAttribute("user");
+		
+		ApartmentDAO apartmentsDAO = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+		ArrayList<Long> idsByHost  = apartmentsDAO.findApartmentsByHost(host.getUsername());
+		
+		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
+		
+		ArrayList<Reservation> ret = new ArrayList<Reservation>();
+		for(Long id : idsByHost) {
+			//getting resertvations that are for apartment with id
+			ArrayList<Reservation> retById = reservationsDAO.findReservationsByApartmentId(id);
+			//adding them to final list to return
+			for (Reservation r : retById) {
+					ret.add(r);
+			}
+		}
+		
+
+		return ret;
+	}
+	
+	@PUT
+	@Path("/acceptReservation/{apartmentId}/{startDate}/{endDate}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Reservation acceptReservation(@PathParam ("apartmentId") Long apartmentId, @PathParam ("startDate") String startDate,
+			@PathParam ("endDate") String endDate, @Context HttpServletRequest request) {
+
+		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
+		Reservation ret = reservationsDAO.acceptReservation(apartmentId, startDate, endDate);
+		
+
+		return ret;
+	}
+	
+	@PUT
+	@Path("/rejectReservation/{apartmentId}/{startDate}/{endDate}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Reservation rejectReservation(@PathParam ("apartmentId") Long apartmentId, @PathParam ("startDate") String startDate,
+			@PathParam ("endDate") String endDate, @Context HttpServletRequest request) {
+
+		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
+		Reservation ret = reservationsDAO.rejectReservation(apartmentId, startDate, endDate);
+		
+
+		return ret;
+	}
+	
+	@PUT
+	@Path("/endReservation/{apartmentId}/{startDate}/{endDate}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response endReservation(@PathParam ("apartmentId") Long apartmentId, @PathParam ("startDate") String startDate,
+			@PathParam ("endDate") String endDate, @Context HttpServletRequest request) {
+
+		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
+		
+		
+		Date endDateParsed = new Date();
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		try{
+			//Setting the date to the given date
+			endDateParsed = formatter.parse(endDate);
+		}catch(ParseException e){
+			e.printStackTrace();
+		}
+		
+		//is reservation really finished?
+		Date now = new Date(); 
+		if(endDateParsed.after(now)) {
+			return Response.status(400).entity("Reservation couldn't be ended, reservation time has to expire!").build();
+		}
+		
+		//if it is update status to ENDED
+		Reservation ret = reservationsDAO.endReservation(apartmentId, startDate, endDate);
+
+		return Response.status(200).entity("Reservation ended: " + ret).build();
+	}
+
+	@GET
+	@Path("/getAllUsersHost")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<User> getAllUsersHost(@Context HttpServletRequest request) {
+		
+		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
+		ApartmentDAO apartmentsDAO = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+		UserDAO usersDAO = (UserDAO) ctx.getAttribute("userDAO");
+		
+		HttpSession session = request.getSession();
+		User host = (User) session.getAttribute("user");
+		
+		//returns apartments ids that are created by host
+		ArrayList<Long> idsByHost  = apartmentsDAO.findApartmentsByHost(host.getUsername());
+	
+		//ret holds all the reservations that are created for this host's apartments
+		ArrayList<Reservation> reservationsByHost = new ArrayList<Reservation>();
+		for(Long id : idsByHost) {
+			//getting resertvations that are for apartment with id
+			ArrayList<Reservation> retById = reservationsDAO.findReservationsByApartmentId(id);
+			//adding them to final list to return
+			for (Reservation r : retById) {
+				reservationsByHost.add(r);
+			}
+		}
+		
+		ArrayList<User> usersByHost = new ArrayList<User>();
+		for(Reservation r : reservationsByHost) {
+			User foundUser = usersDAO.findByUsername(r.getGuest());
+			if(!usersByHost.contains(foundUser))
+				usersByHost.add(foundUser);
+		}
+
+		return usersByHost;
+	}
 }
