@@ -45,100 +45,109 @@
         </div>
     </nav>
 
+
     <!--All users - ADMIN-->
     <div id="adminDiv">
         <div class="row ">
-            <h3 class="header col s12 dark ">All users</h3>
-        </div>
-
-        <div class="row s6 15 offset-12" style="margin-top: 20px" id="allUsersList">
-            <!--List of all users-->
-        </div>
-
-        <!--Block User-->
-        <div class="row ">
-            <h5 class="header col s12 dark grey-text text-darken-3 ">Block user</h5>
-        </div>
-
-        <div class="row  s12 15 offset-12" style="margin-top: 20px;">
-            <form class="col s6" id="blockForm">
-                <div class="input-field col s12">
-                    <select id="selectUser" required>
-                    </select>
-                    <label>Username</label>
+            <div class="col  s6">
+                <div class="row ">
+                    <h3 class="header col s12 dark ">All users</h3>
                 </div>
 
-                <button id="blockUser" class="btn waves-effect waves-light" name="block">Block
-                    <i class="material-icons right">send</i>
-                </button>
-            </form>
-        </div>
-
-        <!--Register new host-->
-        <div class="row ">
-            <h5 class="header col s12 dark grey-text text-darken-3 ">Register new host
-                <a class="btn-floating  waves-effect waves-light" id="showCreateDiv"><i
-                        class="material-icons">add</i></a> </h5>
-            </h5>
-        </div>
-
-        <div id="createDiv">
-            <div class="row  s12 15 offset-12" style="margin-top: 20px;">
-                <form class="col s6" id="registrationForm">
-
-                    <div class="input-field col s12">
-                        <input id="username" name="username" type="text" class="validate" required>
-                        <label for="username">Username</label>
-                    </div>
-
-                    <div class="input-field col s12">
-                        <input id="password" name="password" type="password" class="validate" required>
-                        <label for="password">Password</label>
-                    </div>
-
-                    <div class="input-field col s12">
-                        <input id="passwordControl" name="passwordControl" type="password" class="validate" required>
-                        <label for="passwordControl">Repeat Password</label>
-                    </div>
-
-                    <div class="input-field col s12">
-                        <input id="name" name="name" type="text" class="validate" required>
-                        <label for="name">Name</label>
-                    </div>
-
-                    <div class="input-field col s12">
-                        <input id="lastname" name="lastname" type="text" class="validate" required>
-                        <label for="lastname">Lastname</label>
-                    </div>
-
-                    <div class="input-field col s12">
-                        <select id="selectGender" required>
-                            <option value="OTHER" disabled selected>Choose your gender</option>
-                            <option value="M">Male</option>
-                            <option value="F">Female</option>
-                            <option value="OTHER">Other</option>
-                        </select>
-                        <label>Gender</label>
-                    </div>
-
-                    <button class="btn waves-effect waves-light" type="submit" value="Register" name="register">Submit
-                        <i class="material-icons right">send</i>
-                    </button>
-                </form>
+                <div class="row s6 15 offset-12" style="margin-top: 20px" id="allUsersList">
+                    <!--List of all users-->
+                </div>
             </div>
+            <!--Block User-->
+
+            <div class="col  s6">
+                <div class="row ">
+                    <h3 class="header col s12 dark grey-text text-darken-3 ">Block user</h3>
+                </div>
+
+                <div class="row  s12 15 offset-12" style="margin-top: 20px;">
+                    <form class="col s6" id="blockForm">
+                        <div class="input-field col s12">
+                            <select id="selectUser" required>
+                            </select>
+                            <label>Username</label>
+                        </div>
+
+                        <button id="blockUser" class="btn waves-effect waves-light" name="block">Block
+                            <i class="material-icons right">send</i>
+                        </button>
+                    </form>
+                </div>
+
+                <!--Register new host-->
+                <div class="row ">
+                    <h3 class="header col s12 dark grey-text text-darken-3 ">Register new host
+                        <a class="btn-floating  waves-effect waves-light" id="showCreateDiv"><i
+                                class="material-icons">add</i></a> </h3>
+                    </h5>
+                </div>
+
+                <div id="createDiv">
+                    <div class="row  s12 15 offset-12" style="margin-top: 20px;">
+                        <form class="col s12" id="registrationForm">
+
+                            <div class="input-field col s12">
+                                <input id="username" name="username" type="text" class="validate" required>
+                                <label for="username">Username</label>
+                            </div>
+
+                            <div class="input-field col s12">
+                                <input id="password" name="password" type="password" class="validate" required>
+                                <label for="password">Password</label>
+                            </div>
+
+                            <div class="input-field col s12">
+                                <input id="passwordControl" name="passwordControl" type="password" class="validate"
+                                    required>
+                                <label for="passwordControl">Repeat Password</label>
+                            </div>
+
+                            <div class="input-field col s12">
+                                <input id="name" name="name" type="text" class="validate" required>
+                                <label for="name">Name</label>
+                            </div>
+
+                            <div class="input-field col s12">
+                                <input id="lastname" name="lastname" type="text" class="validate" required>
+                                <label for="lastname">Lastname</label>
+                            </div>
+
+                            <div class="input-field col s12">
+                                <select id="selectGender" required>
+                                    <option value="OTHER" disabled selected>Choose your gender</option>
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                                <label>Gender</label>
+                            </div>
+
+                            <button class="btn waves-effect waves-light" type="submit" value="Register"
+                                name="register">Submit
+                                <i class="material-icons right">send</i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
         </div>
-
-
     </div>
+
 
     <div id="hostDiv">
         <div class="row ">
             <h3 class="header col s12 dark ">Users with reservations for my apartments</h3>
         </div>
-    <div class="row s6 15 offset-12" style="margin-top: 20px" id="allUsersListHost">
-        <!--List of all users-->
+        <div class="row s6 15 offset-12" style="margin-top: 20px" id="allUsersListHost">
+            <!--List of all users-->
+        </div>
     </div>
-</div>
 
 
     <!--  Scripts-->

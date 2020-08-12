@@ -136,7 +136,7 @@ function logOut() {
         url: 'rest/logOut',
         success: function () {
             //alert("Uspešno ste se odjavili");
-            window.location = "./home.html";
+            window.location = "./login.html";
         },
         error: function (jqXhr, textStatus, errorMessage) {
             console.log("Error: ", errorMessage);
@@ -173,10 +173,10 @@ function allAmenities() {
         success: function (amenities) {
 
             for (var amenity of amenities) {
-                $("#allAmenitiesList").append('<div class="row"><ul class="collection with-header" ><li class="collection-header"> <h5 class="grey-text" id="nameLi">Name: ' + amenity.name + '  </h5></li></ul></div>');
-            }
-
-// POPRAVI DA RADI
+                if (amenity.deleted == false) {
+                $("#allAmenitiesList").append('<div class="row"><ul class="collection with-header" ><li class="collection-item"> <h6 class="grey-text text-darken-3" id="nameLi">Name: ' + amenity.name + '  </h6></li></ul></div>');
+             }
+             }
 
             var Options="<option value=\"NAME\" disabled selected>Choose name</option>";
 
@@ -208,7 +208,7 @@ function deleteAmenity () {
             type: 'DELETE',
             success: function () {
                 alert("Amenity deleted.");
-                //location.reload();
+                location.reload();
             },
             error: function (jqXhr, textStatus, errorThrown) {
                 alert("Amenity not deleted.");
