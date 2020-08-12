@@ -175,6 +175,16 @@ public class UserDAO {
 		return users.values();
 	}
 
+	public User findByUsername(String username) {
+
+		for (User u : users.values()) {
+			if (u.getUsername().equals(username)) {
+				return u;
+			}
+		}
+
+		return null;
+	}
 	public User login(User user) {
 		for (User u : users.values()) {
 			if (u.getUsername().equals(user.getUsername())) {
@@ -277,5 +287,6 @@ public class UserDAO {
 		}
 		
 	}
+	
 	
 }

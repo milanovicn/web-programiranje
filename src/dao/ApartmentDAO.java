@@ -259,6 +259,18 @@ public class ApartmentDAO {
 		}
 
 
+		public ArrayList<Long> findApartmentsByHost(String username) {
+			ArrayList<Long> ret = new ArrayList<Long>();
+			for (Apartment a : apartments.values()) {
+				if (a.getHost().equals(username)) {
+					ret.add(a.getId());
+				}
+			}
+			
+			return ret;
+		}
+
+
 		
 	
 	

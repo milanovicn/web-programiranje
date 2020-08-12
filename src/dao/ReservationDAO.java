@@ -161,35 +161,98 @@ public class ReservationDAO {
 		return reservations.values();
 	}
 
-	public Reservation addReservation(Reservation res, TimeInterval resInterval, ArrayList<TimeInterval> reservedDates) {
-		if(!resInterval.valid()) {
+	public Reservation addReservation(Reservation res, TimeInterval resInterval,
+			ArrayList<TimeInterval> reservedDates) {
+		if (!resInterval.valid()) {
 			return null;
 		}
-		
-		if(!resInterval.overlaps(resInterval, reservedDates)) {
+
+		if (!resInterval.overlaps(resInterval, reservedDates)) {
 			reservations.put(res.getMessage(), res);
 			saveReservations();
 			return res;
-			
+
 		} else {
 			return null;
 		}
-		
+
 	}
 
 	public Reservation cancelReservation(Long apartmentId, String startDate, String endDate) {
 		for (Reservation r : reservations.values()) {
-			if(r.getApartmentId()==apartmentId && r.getStartDate().equals(startDate) && r.getEndDate().equals(endDate)) {
-				if(r.getStatus().equals(ReservationStatus.CREATED) || r.getStatus().equals(ReservationStatus.ACCEPTED) ) {
+			if (r.getApartmentId() == apartmentId && r.getStartDate().equals(startDate)
+					&& r.getEndDate().equals(endDate)) {
+				if (r.getStatus().equals(ReservationStatus.CREATED)
+						|| r.getStatus().equals(ReservationStatus.ACCEPTED)) {
 					r.setStatus(ReservationStatus.CANCELED);
 					saveReservations();
 					return r;
 				}
 			}
-			
+
 		}
-		
+
 		return null;
 	}
+
+	public ArrayList<Reservation> findReservationsByApartmentId(Long id) {
+		ArrayList<Reservation> ret = new ArrayList<Reservation>();
+		for (Reservation r : reservations.values()) {
+			if (r.getApartmentId() == id) {
+				ret.add(r);
+			}
+		}
+		return ret;
+	}
+
+	public Reservation acceptReservation(Long apartmentId, String startDate, String endDate) {
+		for (Reservation r : reservations.values()) {
+			if (r.getApartmentId() == apartmentId && r.getStartDate().equals(startDate)
+					&& r.getEndDate().equals(endDate)) {
+				if (r.getStatus().equals(ReservationStatus.CREATED)) {
+					r.setStatus(ReservationStatus.ACCEPTED);
+					saveReservations();
+					return r;
+				}
+			}
+
+		}
+
+		return null;
+	}
+
+	public Reservation rejectReservation(Long apartmentId, String startDate, String endDate) {
+		for (Reservation r : reservations.values()) {
+			if (r.getApartmentId() == apartmentId && r.getStartDate().equals(startDate)
+					&& r.getEndDate().equals(endDate)) {
+				if (r.getStatus().equals(ReservationStatus.CREATED)) {
+					r.setStatus(ReservationStatus.REJECTED);
+					saveReservations();
+					return r;
+				}
+			}
+
+		}
+
+		return null;
+	}
+	
+	public Reservation endReservation(Long apartmentId, String startDate, String endDate) {
+		for (Reservation r : reservations.values()) {
+			if (r.getApartmentId() == apartmentId && r.getStartDate().equals(startDate)
+					&& r.getEndDate().equals(endDate)) {
+				if (r.getStatus().equals(ReservationStatus.ACCEPTED)) {
+					r.setStatus(ReservationStatus.ENDED);
+					saveReservations();
+					return r;
+				}
+			}
+
+		}
+
+		return null;
+	}
+
+
 
 }
