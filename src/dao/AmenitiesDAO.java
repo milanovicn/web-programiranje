@@ -171,6 +171,23 @@ public class AmenitiesDAO {
 		}
 		
 		
+		
+		public Amenities addAmenities (Amenities amenity) {
+
+			for (Amenities a : amenities.values()) {
+				if (a.getName().equals(amenity.getName())) {
+					return null;
+				}
+			}
+			
+			amenity.setId(amenities.size()+1);
+			amenities.put(amenity.getName(), amenity);
+			saveAmenities();
+			
+			return amenity;
+		}
+		
+		/*//sa promenom obrisanog
 		public Amenities addAmenities (Amenities amenity) {
 
 			for (Amenities a : amenities.values()) {
@@ -194,7 +211,8 @@ public class AmenitiesDAO {
 			
 			return amenity;
 		}
-
+		*/
+		
 	
 		public Amenities deleteAmenities (String amenityDelete) {
 			for (Amenities a : amenities.values()) {

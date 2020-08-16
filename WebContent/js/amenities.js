@@ -23,7 +23,7 @@ $(document).ready(function () {
     
     whoIsLoggedIn();
     deleteAmenity();
-    changeAmenity();
+    //changeAmenity();
 
 
     $("#logout").click(function () {
@@ -36,6 +36,9 @@ $(document).ready(function () {
         addAmenity();
     });
 
+    $("#changeAmenityForm").submit(function (event) {
+        changeAmenity();
+    });
 
 
 });
@@ -180,10 +183,12 @@ function allAmenities() {
              }
 
             var Options="<option value=\"NAME\" disabled selected>Choose name</option>";
+            var OptionsChange="<option value=\"NAME\" disabled selected>Choose current name</option>";
 
             for (var a of amenities) {
                 if (a.deleted == false) {
                     Options=Options+"<option value='" + a.name + "'>" + a.name + "</option>";
+                    OptionsChange = OptionsChange+"<option value='" + a.name + "'>" + a.name + "</option>";
                 }
             }
 
@@ -191,6 +196,10 @@ function allAmenities() {
             $('#selectAmenity').empty();
             $('#selectAmenity').append(Options);
             $("#selectAmenity").formSelect();
+
+            $('#selectAmenityChange').empty();
+            $('#selectAmenityChange').append(OptionsChange);
+            $("#selectAmenityChange").formSelect();
 
         },
         error: function (jqXhr, textStatus, errorMessage) {
@@ -220,9 +229,11 @@ function deleteAmenity () {
 }
 
 function changeAmenity () {
-    $("#changeAmenity").click(function () {
-        var name = $('#selectAmenity :selected').text();
- 
+    event.preventDefault();
+    //$("#changeAmenity").click(function () {
+        var oldName = $('#selectAmenityChange :selected').val();
+        var newName = $('input[name="newName"]').val();
+
         $.ajax({
             url: 'rest/changeAmenityName/' + oldName + "/" + newName,
             type: 'PUT',
@@ -233,7 +244,8 @@ function changeAmenity () {
             error: function (jqXhr, textStatus, errorThrown) {
                 alert("Amenity not changed.");
                 console.log(errorThrown);
+                location.reload();
             }
         });
-    });
+   // });
 }
