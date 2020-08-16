@@ -67,7 +67,7 @@
 
                     <div class="input-field col s12">
                         <input id="name" name="name" type="text" class="validate" required>
-                        <label for="name">name</label>
+                        <label for="name">Name</label>
                     </div>
 
                     <button id="addAmenity" class="btn waves-effect waves-light" name="addAmenity">Add
@@ -75,6 +75,7 @@
                     </button>
                 </form>
             </div>
+
 
 
             <!--Delete amenity-->
@@ -95,8 +96,41 @@
                     </button>
                 </form>
             </div>
+
+
+
+
+
+            <!--Change amenity-->
+            <div class="row ">
+                <h3 class="header col s12 dark ">Change amenity</h3>
+                <form class="col" id="changeAmenityForm">
+
+                    <div class="input-field col s12">
+                        <select id="selectAmenityChange" required>
+                            <option value="NAME" disabled selected>Choose current name</option>
+                        </select>
+                        <label>Current Name</label>
+                    </div>
+
+                    <div class="input-field col s12">
+                        <input id="newName" name="newName" type="text" class="validate" required>
+                        <label for="newName">New Name</label>
+                    </div>
+
+                    <button id="changeAmenity" class="btn waves-effect waves-light" name="changeAmenity">Change
+                        <i class="material-icons right">send</i>
+                    </button>
+                </form>
+            </div>
+
+
+
+
         </div>
     </div>
+
+
     <!--  Scripts-->
     <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="js/amenities.js"></script>
