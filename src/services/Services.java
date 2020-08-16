@@ -329,6 +329,22 @@ public class Services {
 
 		return Response.status(200).entity("Amenity deleted" + am).build();
 	}
+	
+	
+	//PROVERI
+	@PUT
+	@Path("changeAmenityName/{oldName}/{newName}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response changeAmenityName (@PathParam("oldName") String oldName, @PathParam("newName") String newName) {
+		
+		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
+
+		Amenities am = amenities.changeAmenityName(oldName, newName);
+
+		return Response.status(200).entity("Amenity changed" + am).build();
+	}
+	
+	
 
 	@GET
 	@Path("/getAllReservations")

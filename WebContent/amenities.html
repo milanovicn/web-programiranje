@@ -77,30 +77,37 @@
             </div>
 
 
-            <!--Delete amenity-->
+
+
+
+            <!--Change amenity-->
             <div class="row ">
-                <h3 class="header col s12 dark ">Delete amenity</h3>
-                <form class="col" id="deleteAmenityForm">
+                <h3 class="header col s12 dark ">Change amenity</h3>
+                <form class="col" id="changeAmenityForm">
+
                     <div class="input-field col s12">
                         <select id="selectAmenity" required>
-                            <option value="NAME" disabled selected>Choose name</option>
-
-
+                            <option value="NAME" disabled selected>Choose current name</option>
                         </select>
-                        <label>Name</label>
+                        <label>Current Name</label>
                     </div>
 
-                    <button id="deleteAmenity" class="btn waves-effect waves-light" name="deleteAmenity">Delete
+                    <div class="input-field col s12">
+                        <input id="newName" name="newName" type="text" class="validate" required>
+                        <label for="newName">New Name</label>
+                    </div>
+
+                    <button id="changeAmenity" class="btn waves-effect waves-light" name="changeAmenity">Change
                         <i class="material-icons right">send</i>
                     </button>
                 </form>
             </div>
 
 
+
+
         </div>
     </div>
-
-
 
 
     <!--  Scripts-->

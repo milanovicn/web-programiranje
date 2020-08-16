@@ -23,6 +23,7 @@ $(document).ready(function () {
     
     whoIsLoggedIn();
     deleteAmenity();
+    changeAmenity();
 
 
     $("#logout").click(function () {
@@ -212,6 +213,25 @@ function deleteAmenity () {
             },
             error: function (jqXhr, textStatus, errorThrown) {
                 alert("Amenity not deleted.");
+                console.log(errorThrown);
+            }
+        });
+    });
+}
+
+function changeAmenity () {
+    $("#changeAmenity").click(function () {
+        var name = $('#selectAmenity :selected').text();
+ 
+        $.ajax({
+            url: 'rest/changeAmenityName/' + oldName + "/" + newName,
+            type: 'PUT',
+            success: function () {
+                alert("Amenity changed.");
+                location.reload();
+            },
+            error: function (jqXhr, textStatus, errorThrown) {
+                alert("Amenity not changed.");
                 console.log(errorThrown);
             }
         });
