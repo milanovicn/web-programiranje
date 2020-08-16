@@ -1,6 +1,7 @@
 package dao;
 
 import java.io.BufferedReader;
+import java.io.Console;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -19,7 +20,6 @@ import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import beans.Amenities;
-import beans.User;
 
 public class AmenitiesDAO {
 	
@@ -174,9 +174,18 @@ public class AmenitiesDAO {
 		public Amenities addAmenities (Amenities amenity) {
 
 			for (Amenities a : amenities.values()) {
+				
 				if (a.getName().equals(amenity.getName())) {
+					//da li imam obrisanog sa tim imenom u listi
+					if (a.isDeleted()) {
+						a.setDeleted(false);
+						saveAmenities();
+						return a;
+					}
+					
 					return null;
 				}
+				
 			}
 			
 			amenity.setId(amenities.size()+1);
@@ -197,6 +206,27 @@ public class AmenitiesDAO {
 			}
 			return null;
 		}
+		
+		
+		public Amenities changeAmenityName (String oldName, String newName) {
+			
+			for (Amenities a : amenities.values()) {
+				if (a.getName().equals(newName)) {
+					return null;
+				}		
+			}
+			
+			for (Amenities a : amenities.values()) {
+				if (a.getName().equals(oldName)) {
+					a.setName(newName);
+					saveAmenities();
+					return a;	
+				}
+			}
+			return null;
+		}
+
+		
 		
 		public Amenities findById(Long id) {
 
