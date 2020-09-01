@@ -216,8 +216,12 @@ function loadReservationsForUser() {
                     var btnCancel = $('</div><div class="col s12"><button id="cancelReservation" class="btn waves-effect waves-light light-blue ">Cancel<i class="material-icons right">send</i></button></div>');
                     btnCancel.click(cancelReservation(reservation));
                     $("#allReservationsUser").append(htmlCode).append(btnCancel).append('</div>');
-                    //$("#allReservationsUser").append(btnCancel);
-                   // $("#allReservationsUser").append('</ul></div>');
+                } else if((reservation.status == "REJECTED" || reservation.status == "ENDED") && reservation.commented == false){
+					var commentText = $('</div><div class="col s12"><input id="commentText'+ reservation.apartmentId + '" name="commentText" type="text" class="validate" required><label for="commentText">Comment</label></div>');
+					var commentRate = $('<div class="col s12"><input id="commentRate'+ reservation.apartmentId + '" name="commentRate" type="number" class="validate" required><label for="commentRate">Rate</label></div>');
+                    var btnComment = $('<div class="col s12"><button id="commentReservation" class="btn waves-effect waves-light light-blue ">Comment<i class="material-icons right">send</i></button></div>');
+                    btnComment.click(commentReservation(reservation, commentText, commentRate));
+                    $("#allReservationsUser").append(htmlCode).append(commentText).append(commentRate).append(btnComment).append('</div>');
                 } else {
                     $("#allReservationsUser").append(htmlCode).append('</div>');
                 }
@@ -247,6 +251,24 @@ function cancelReservation(reservation) {
         }
     });
     }
+}
+
+function commentReservation(reservation) { 
+	return function() {
+	var commentText = $("#commentText" + reservation.apartmentId).val();
+	var commentRate = $("#commentRate" + reservation.apartmentId).val();
+	$.post({
+        url: 'rest/commentReservation/' + reservation.apartmentId  + "/" + reservation.startDate  + "/" + reservation.endDate + "/" + commentText + "/" + commentRate,
+        success: function () {
+            alert("Reservation commented");
+            location.reload();
+        },
+        error: function () {
+            alert("Reservation not commented");
+            location.reload();
+        }
+    });
+}
 }
 
 

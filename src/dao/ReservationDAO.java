@@ -253,6 +253,20 @@ public class ReservationDAO {
 		return null;
 	}
 
+	public Reservation commentReservation(Long apartmentId, String startDate, String endDate) {
+		for (Reservation r : reservations.values()) {
+			if (r.getApartmentId() == apartmentId && r.getStartDate().equals(startDate)
+					&& r.getEndDate().equals(endDate)) {
+					r.setCommented(true);
+					saveReservations();
+					return r;
+				}
+			
+
+		}
+		return null;
+	}
+
 
 
 }

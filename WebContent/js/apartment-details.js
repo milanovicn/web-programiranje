@@ -2,12 +2,11 @@ var params = new URL(location.href).searchParams;
 var apartmentId = params.get("apartmentId"); 
 var loggedInUser = "";
 var apartment;
+var allComments = [];
 
 $(document).ready(function () {
-    loadApartmentDetails();
-	//$("#hostDiv").hide();
-	//$("#userDiv").show();
-	//$("#adminDiv").hide();
+	loadApartmentDetails();
+	getAllComments();
 
 	$('select').formSelect();
 	$('.datepicker').datepicker();
@@ -35,30 +34,17 @@ $(document).ready(function () {
 	$("#logoutM").hide();
 
 
-	whoIsLoggedIn();
-
 	$("#logout").click(function () {
 		logOut();
 	});
 	$("#logoutM").click(function () {
 		logOut();
 	});
-
-    //BICE ZA EDIT OVO
-	//$("#createDiv").hide();
-	//$("#showCreateDiv").click(function () {
-	//	$("#createDiv").toggle();
-	//});
-    //$("#createForm").submit(function (event) {
-	//	saveApartment();
-	//});
-
 	
 	$("#reservationDiv").hide();
 	$("#showReservationDiv").click(function () {
 		$("#reservationDiv").toggle();
 	});
-
 
 	$("#createReservationForm").submit(function (event) {
 		createReservation();
@@ -76,7 +62,7 @@ function whoIsLoggedIn() {
 				loggedInUser = user.username;
 
 				if (user.role == "GUEST") {
-					
+					loadCommentsUser();
 					//$("#hostDiv").hide();
 					$("#userDiv").show();
 					//$("#adminDiv").hide();
@@ -102,7 +88,7 @@ function whoIsLoggedIn() {
 					console.log(user);
 
 				} else if (user.role == "ADMIN") {
-					
+					loadCommentsAdmin();
 					//$("#hostDiv").hide();
 					$("#userDiv").hide();
 					//$("#adminDiv").show();
@@ -128,8 +114,10 @@ function whoIsLoggedIn() {
 
 					console.log("Admin logged in");
 					console.log(user);
+					loadCommentsUser();
 
 				} else if (user.role == "HOST") {
+					loadCommentsHost();
 					//$("#hostDiv").show();
 					$("#userDiv").hide();
 					//$("#adminDiv").hide();
@@ -157,6 +145,7 @@ function whoIsLoggedIn() {
 
 				} else {
 					loadApartmentsForUser();
+					loadCommentsUser();
 					//$("#hostDiv").hide();
 					//$("#userDiv").show();
 					//$("#adminDiv").hide();
@@ -233,6 +222,82 @@ function loadApartmentDetails() {
 	});
 
 }
+
+function getAllComments() {
+	$.get({
+		url: 'rest/getAllCommentsById/' + apartmentId,
+		contentType: 'application/json',
+		success: function (comments) {
+			allComments = comments;
+		},
+		error: function (jqXhr, textStatus, errorMessage) {
+			console.log(errorMessage);
+		}
+	});
+	
+	whoIsLoggedIn();
+}
+
+function loadCommentsUser() {
+	
+	for (let i = 0; i < allComments.length; i++) {
+		let comment = allComments[i];
+		if(comment.approved == true){
+			$("#commentsList").append('<li class="collection-item">Comment: '+ comment.content +' <br>Rate: '+comment.rate+'</li>');
+		}
+
+	}
+}
+
+function loadCommentsAdmin() {
+	
+	for (let i = 0; i < allComments.length; i++) {
+		let comment = allComments[i];
+		if(comment.approved == true){
+			$("#commentsList").append('<li class="collection-item">Comment: ' + comment.content + ' <br>Rate: ' + comment.rate
+			+' <br>Status: approved</li>');
+		} else {
+			$("#commentsList").append('<li class="collection-item">Comment: ' + comment.content + ' <br>Rate: ' + comment.rate
+			+' <br>Status: disapproved</li>');
+		}
+	}
+}
+
+function loadCommentsHost() {
+	//<div class="col s12">
+	for (let i = 0; i < allComments.length; i++) {
+		let comment = allComments[i];
+		if(comment.approved == true){
+			var btnHideComment = $('<div class="col s12"  style="margin-bottom: 20px;" ><button id="btnHideComment" class="btn waves-effect waves-light light-blue ">Disapprove<i class="material-icons right">close</i></button>');
+            btnHideComment.click(changeCommentStatus(comment));
+			$("#commentsList").append('<li class="collection-item">Comment: ' + comment.content + ' <br>Rate: ' + comment.rate
+			+' <br>').append(btnHideComment).append('</li>');
+		} else {
+			var btnShowComment = $('<div class="col s12"  style="margin-bottom: 20px;" ><button id="btnShowComment" class="btn waves-effect waves-light light-blue ">Approve<i class="material-icons right">remove_red_eye</i></button></div>');
+            btnShowComment.click(changeCommentStatus(comment));
+			$("#commentsList").append('<li class="collection-item">Comment: ' + comment.content + ' <br>Rate: ' + comment.rate
+			+' <br>').append(btnShowComment).append('</li>');
+		}
+	}
+}
+
+function changeCommentStatus(comment) { 
+    return function() {
+    $.ajax({
+        url: 'rest/changeCommentStatus/' + comment.apartmentId  + "/" + comment.content  + "/" + comment.rate,
+		type: 'PUT',
+        success: function () {
+            alert("Comment approved status changed");
+            location.reload();
+        },
+        error: function () {
+            alert("Comment approved status changed");
+            location.reload();
+        }
+    });
+    }
+}
+
 
 function createReservation() {
     event.preventDefault();

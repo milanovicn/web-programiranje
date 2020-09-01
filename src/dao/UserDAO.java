@@ -287,6 +287,21 @@ public class UserDAO {
 		}
 		
 	}
+
+	public void updateReservationCommentStatus(String guest, Reservation ret) {
+		for (User u : users.values()) {
+			if (u.getUsername().equals(guest)) {
+				for (Reservation r : u.getMyReservations()) {
+					if(r.getApartmentId()==ret.getApartmentId() && r.getStartDate().equals(ret.getStartDate()) && r.getEndDate().equals(ret.getEndDate())) {
+						r.setCommented(true);
+						saveUsers();		
+						return;
+					}			
+				}		
+			}
+		}
+		
+	}
 	
 	
 }
