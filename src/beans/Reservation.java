@@ -14,6 +14,7 @@ public class Reservation {
 	private String message;
 	private String guest;
 	private ReservationStatus status = ReservationStatus.CREATED;
+	private boolean commented = false;
 	
 	
 	public Reservation() {
@@ -30,6 +31,7 @@ public class Reservation {
 		this.guest = guest;
 		//this.endDate = startDate.plusDays(stays);
 		this.status = ReservationStatus.CREATED;
+		this.commented = false;
 		
 	}
 	
@@ -83,11 +85,19 @@ public class Reservation {
 		this.status = status;
 	}
 
+	public boolean isCommented() {
+		return commented;
+	}
+
+	public void setCommented(boolean commented) {
+		this.commented = commented;
+	}
+
 	@Override
 	public String toString() {
 		return "Reservation [apartmentId=" + apartmentId + ", startDate=" + startDate + ", endDate=" + endDate
 				+ ", stays=" + stays + ", cost=" + cost + ", message=" + message + ", guest=" + guest + ", status="
-				+ status + "]";
+				+ status + ", commented=" + commented + "]";
 	}
 	
 	

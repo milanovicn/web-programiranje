@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response;
 
 import beans.Amenities;
 import beans.Apartment;
+import beans.Comment;
 import beans.Reservation;
 import beans.User;
 import beans.enums.ReservationStatus;
@@ -510,6 +511,9 @@ public class Services {
 		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
 		Reservation ret = reservationsDAO.acceptReservation(apartmentId, startDate, endDate);
 		
+		//update status in guest list of reservations
+		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
+		users.updateReservationStatus(ret.getGuest(), ret);
 
 		return ret;
 	}
@@ -523,6 +527,9 @@ public class Services {
 		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
 		Reservation ret = reservationsDAO.rejectReservation(apartmentId, startDate, endDate);
 		
+		//update status in guest list of reservations
+		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
+		users.updateReservationStatus(ret.getGuest(), ret);
 
 		return ret;
 	}
@@ -553,6 +560,10 @@ public class Services {
 		
 		//if it is update status to ENDED
 		Reservation ret = reservationsDAO.endReservation(apartmentId, startDate, endDate);
+		
+		//update status in guest list of reservations
+		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
+		users.updateReservationStatus(ret.getGuest(), ret);
 
 		return Response.status(200).entity("Reservation ended: " + ret).build();
 	}
@@ -591,5 +602,61 @@ public class Services {
 		}
 
 		return usersByHost;
+	}
+	
+	@POST
+	@Path("/commentReservation/{apartmentId}/{startDate}/{endDate}/{commentText}/{commentRate}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response commentReservation(@PathParam ("apartmentId") Long apartmentId, @PathParam ("startDate") String startDate,
+			@PathParam ("endDate") String endDate, @PathParam ("commentText") String commentText,  
+			@PathParam ("commentRate") int commentRate, @Context HttpServletRequest request) {
+
+		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
+		HttpSession session = request.getSession();
+		User guest = (User) session.getAttribute("user");
+		
+		Comment newComment = new Comment(apartmentId, guest.getUsername(), commentText, commentRate);
+		
+		//add new comment to apartment
+		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+		Apartment apt = apartments.findById(apartmentId);
+		apartments.addComment(apt, newComment);
+		
+		//set reservation to commented
+		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
+		Reservation ret = reservationsDAO.commentReservation(apartmentId, startDate, endDate);
+		
+		//update commented status in guest list of reservations
+		users.updateReservationCommentStatus(ret.getGuest(), ret);
+
+		
+
+		return Response.status(200).entity("Comment created: " + newComment).build();
+	}
+	
+	@GET
+	@Path("/getAllCommentsById/{apartmentId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Comment> getAllCommentsById(@PathParam("apartmentId") Long apartmentId) {
+
+		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+		Apartment ret = apartments.findById(apartmentId);
+
+		return ret.getComments();
+	}
+	
+	@PUT
+	@Path("/changeCommentStatus/{apartmentId}/{commentText}/{commentRate}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response changeCommentStatus(@PathParam ("apartmentId") Long apartmentId, @PathParam ("commentText") String commentText,
+			@PathParam ("commentRate") int commentRate, @Context HttpServletRequest request) {
+
+		
+
+		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+		Apartment apt = apartments.findById(apartmentId);
+		Comment c = apartments.changeCommentStatus(apt, commentRate, commentText);
+		
+		return Response.status(200).entity("Comment status changed: " + c).build();
 	}
 }

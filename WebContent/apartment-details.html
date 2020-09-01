@@ -15,7 +15,7 @@
 <body>
     <!--Nav bar-->
     <nav class="white" role="navigation">
-        <div class="nav-wrapper container">
+        <div class="nav-wrapper container s8">
             <a id="logo-container" href="home.html" class="brand-logo"><i class="material-icons">explore</i></a>
             <ul class="right hide-on-med-and-down">
                 <li id="login"><a href="login.html">Log in</a></li>
@@ -73,11 +73,11 @@
             </h5>
         </div>
         <div id="reservationDiv">
-            
+
             <h6 id="availableDatesDet">Dates available: </h6>
             <div class="row  s6 15 offset-12" style="margin-top: 20px;">
                 <form class="col " id="createReservationForm">
-                    
+
                     <div class="input-field col s6">
                         <input id="startDate" name="startDate" type="text" class="validate datepicker" required>
                         <label for="startDate">Date</label>
@@ -100,7 +100,7 @@
             </div>
 
         </div>
-
+        <!--Comments-->
 
 
     </div>
@@ -109,7 +109,17 @@
     <!--Host and Admin div - delete and edit-->
 
     <!--Comments-->
+    <div>
+        <div class="row ">
+            <h5 class="header col s4 dark grey-text text-darken-3 ">Comments
+            </h5>
+        </div>
+        <div class="row s6 15 offset-12" style="margin-top: 20px">
+            <ul id="commentsList" class="collection with-header">
+            </ul>
+        </div>
 
+    </div>
     <!--  Scripts-->
     <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="js/apartment-details.js"></script>
