@@ -7,12 +7,15 @@ var allComments = [];
 $(document).ready(function () {
 	loadApartmentDetails();
 	getAllComments();
+	allAmenities();
 
 	$('select').formSelect();
 	$('.datepicker').datepicker();
 	$('.timepicker').timepicker();
 
 	$("#userDiv").hide();
+	$("#changeApartmentDiv").hide();
+
 
 	$("#login").show();
 	$("#register").show();
@@ -64,6 +67,7 @@ function whoIsLoggedIn() {
 				if (user.role == "GUEST") {
 					loadCommentsUser();
 					//$("#hostDiv").hide();
+					$("#changeApartmentDiv").hide();
 					$("#userDiv").show();
 					//$("#adminDiv").hide();
 
@@ -90,6 +94,7 @@ function whoIsLoggedIn() {
 				} else if (user.role == "ADMIN") {
 					loadCommentsAdmin();
 					//$("#hostDiv").hide();
+					$("#changeApartmentDiv").show();
 					$("#userDiv").hide();
 					//$("#adminDiv").show();
 
@@ -120,6 +125,7 @@ function whoIsLoggedIn() {
 					loadCommentsHost();
 					//$("#hostDiv").show();
 					$("#userDiv").hide();
+					$("#changeApartmentDiv").show();
 					//$("#adminDiv").hide();
 
 					$("#login").hide();
@@ -364,6 +370,38 @@ function formatDateISO(dateToFormat) {
 	returnValue +=day;
 	return returnValue;
 
+}
+
+var amenityIds = [];
+function allAmenities() {
+	$.get({
+		url: 'rest/getAllAmenities',
+		contentType: 'application/json',
+		success: function (amenities) {
+		
+			for (let i = 0; i < amenities.length; i++) {
+				let amenity = amenities[i];
+				if (amenity.deleted != true) {
+					amenityIds[i] = amenity.id;
+
+					$("#amenitiesDiv").append(
+						'<div class="col s6">' +
+						' <label>' +
+						' <input id="aId' + amenity.id + '"type="checkbox" />' +
+						'<span>' + amenity.name + '</span>' +
+						' </label>' +
+						'</div>'
+
+					);
+				}
+
+			}
+
+		},
+		error: function (jqXhr, textStatus, errorMessage) {
+			console.log(errorMessage);
+		}
+	});
 }
 
 function editApartment() {
