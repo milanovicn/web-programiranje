@@ -291,6 +291,31 @@ public class Services {
 		return ret;
 	}
 
+	@DELETE
+	@Path("/deleteApartment/{apartmentId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteApartment(@PathParam("apartmentId") Long apartmentId) {
+
+		ApartmentDAO apartment = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+
+		Apartment ap = apartment.deleteApartment(apartmentId);
+
+		return Response.status(200).entity("Apartment deleted" + ap).build();
+	}
+	
+	@PUT
+	@Path("changeApartmentStatus/{apartmentId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response changeApartmentStatus (@PathParam("apartmentId") Long apartmentId) {
+		
+		ApartmentDAO apartment = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+
+		Apartment ap = apartment.changeApartmentStatus(apartmentId);
+		
+		return Response.status(200).entity("Apartment status changed" + ap).build();
+	}
+	
+	
 	@GET
 	@Path("/getAllAmenities")
 	@Produces(MediaType.APPLICATION_JSON)

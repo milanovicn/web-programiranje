@@ -48,6 +48,7 @@
 
     <div class="row  s8 15 offset-12" style="margin-top: 20px;">
         <div class="col s8">
+            <h6 id="statusDet">Status: </h6>
             <h6 id="priceDet">Price per night: </h6>
             <h6 id="locationDet">Location: </h6>
             <h6 id="apartmentTypeDet">Type: </h6>
@@ -62,6 +63,19 @@
             <img id="previewImage" src="#" alt="" width="200" height="200" />
 
         </div>
+    </div>
+
+
+    <!--Dugmici za izmenu aktivnosti i brisanje apartmana-->
+
+    <div>
+
+    <button id="changeStatusBtn" class="btn waves-effect waves-light" name="changeStatusBtn">Change Status
+    </button>
+
+    <button id="deleteApartmentBtn" class="btn waves-effect waves-light" name="deleteApartmentBtn">Delete Apartment
+    </button>
+
     </div>
 
     <!--User div - making reservations-->
@@ -100,7 +114,19 @@
             </div>
 
         </div>
-        <!--Comments-->
+
+            <!--Comments-->
+    <div>
+        <div class="row ">
+            <h5 class="header col s4 dark grey-text text-darken-3 ">Comments
+            </h5>
+        </div>
+        <div class="row s6 15 offset-12" style="margin-top: 20px">
+            <ul id="commentsList" class="collection with-header">
+            </ul>
+        </div>
+
+    </div>
 
 
     </div>
@@ -226,23 +252,9 @@
 
 
 
-
-
-
     <!--Host and Admin div - delete and edit-->
 
-    <!--Comments-->
-    <div>
-        <div class="row ">
-            <h5 class="header col s4 dark grey-text text-darken-3 ">Comments
-            </h5>
-        </div>
-        <div class="row s6 15 offset-12" style="margin-top: 20px">
-            <ul id="commentsList" class="collection with-header">
-            </ul>
-        </div>
 
-    </div>
     <!--  Scripts-->
     <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="js/apartment-details.js"></script>

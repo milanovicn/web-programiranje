@@ -199,6 +199,41 @@ public class ApartmentDAO {
 		return a;
 
 	}
+	
+	public Apartment deleteApartment (long apartmentId) {
+		
+		Apartment a = findById(apartmentId);
+		
+		if(a != null) {
+			a.setDeleted(true);
+			saveApartments();
+			return a;
+		}
+		
+		return null;
+	}
+	
+	public Apartment changeApartmentStatus (long apartmentId ) {
+		
+		Apartment a = findById(apartmentId);
+		
+		if(a != null) {
+			
+			if (a.getStatus().equals(ApartmentStatus.ACTIVE)) {
+				a.setStatus(ApartmentStatus.INACTIVE);
+				saveApartments();
+				return a;
+			}
+			else {
+				a.setStatus(ApartmentStatus.ACTIVE);
+				saveApartments();
+				return a;
+			}
+		}
+		
+		return null;
+		
+	}
 
 	private void save(String fileName, String ext, String imageToBeBuffered) {
 

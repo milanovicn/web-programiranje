@@ -189,7 +189,8 @@ function loadApartmentDetails() {
 		url: 'rest/getApartmentById/' + apartmentId,
 		contentType: 'application/json',
 		success: function (apartmentGet) {
-            apartment = apartmentGet;
+			apartment = apartmentGet;
+			$("#statusDet").append( apartment.status);
             $("#priceDet").append( apartment.price + ' \u20AC');
             $("#locationDet").append( apartment.locationString );
             $("#apartmentTypeDet").append( apartment.type );
@@ -451,3 +452,41 @@ function editApartment() {
 	});
 
 }
+
+function changeApartmentStatus() { 
+    $("#changeStatusBtn").click(function () {
+    $.ajax({
+        url: 'rest/changeApartmentStatus/' + apartmentId,
+		type: 'PUT',
+        success: function () {
+            alert("Status changed");
+            location.reload();
+        },
+        error: function () {
+            alert("Status not changed");
+            location.reload();
+        }
+    });
+	});
+}	
+
+
+function deleteApartment () {
+	var id = apartmentId;
+    $("#deleteApartmentBtn").click(function () {
+        $.ajax({
+            url: 'rest/deleteApartment/' + id,
+            type: 'DELETE',
+            success: function () {
+                alert("Apartment deleted.");
+                location.reload();
+            },
+            error: function (jqXhr, textStatus, errorThrown) {
+                alert("Apartment not deleted.");
+				console.log(errorThrown);
+				location.reload();
+            }
+        });
+    });
+}
+
