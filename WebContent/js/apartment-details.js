@@ -2,6 +2,7 @@ var params = new URL(location.href).searchParams;
 var apartmentId = params.get("apartmentId"); 
 var loggedInUser = "";
 var apartment;
+var image2 = [];
 var allComments = [];
 
 $(document).ready(function () {
