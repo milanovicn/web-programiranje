@@ -365,3 +365,50 @@ function formatDateISO(dateToFormat) {
 	return returnValue;
 
 }
+
+function editApartment() {
+
+	event.preventDefault();
+
+	var images = image2;
+
+	var type = $('#selectType :selected').val();
+	var rooms = $('input[name="rooms"]').val();
+	var capacity = $('input[name="capacity"]').val();
+	var price = $('input[name="price"]').val();
+	var checkIn = $('input[name="checkIn"]').val();
+	var checkOut = $('input[name="checkOut"]').val();
+	var latitude = $('input[name="latitude"]').val();
+	var longitude = $('input[name="longitude"]').val();
+	var street = $('input[name="street"]').val();
+	var number = $('input[name="number"]').val();
+	var city = $('input[name="city"]').val();
+	var postalCode = $('input[name="postalCode"]').val();
+	var locationString = latitude + "," + longitude + "," + street + "," + number + "," + city + "," + postalCode;
+
+	//generating string of chosen amenities
+	var amenitiesString = "";
+	for (let i = 0; i < amenityIds.length; i++) {
+		if (($("#aId" + amenityIds[i]).is(":checked")) == true) {
+			amenitiesString += amenityIds[i] + ",";
+		}
+	}
+	
+	var id = apartmentId;
+
+	$.post({
+		//poslati id trenutnog i sve nove vrednosti
+		
+		url: 'rest/editApartment',
+		data: JSON.stringify({ id, type, rooms, capacity, checkIn, checkOut, price, locationString, images, amenitiesString }),
+		contentType: 'application/json',
+		success: function () {
+			alert("Apartment changed successfully");
+			location.reload();
+		},
+		error: function (jqXhr, textStatus, errorMessage) {
+			console.log("Error creating apartment: ", errorMessage);
+		}
+	});
+
+}
