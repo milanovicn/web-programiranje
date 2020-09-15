@@ -755,10 +755,8 @@ public class Services {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<Apartment> searchApartments(ApartmentSearch as) {
-		System.out.println("AS " + as);
 		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
 		ArrayList<Apartment> ret = apartments.searchApartment(as);
-		System.out.println("RET2 : " + ret);
 		return ret;
 	}
 

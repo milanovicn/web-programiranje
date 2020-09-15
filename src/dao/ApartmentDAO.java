@@ -370,6 +370,8 @@ public class ApartmentDAO {
 			e.printStackTrace();
 		}
 
+		
+		
 		ArrayList<Apartment> ret = new ArrayList<Apartment>();
 
 		// getting all apartments
@@ -416,7 +418,7 @@ public class ApartmentDAO {
 				}
 			}
 
-			if (!as.getDateFrom().equals("all") || !as.getDateTo().equals("all")) {
+			if (!as.getDateFrom().equals("1990-01-01") || !as.getDateTo().equals("2035-12-31")) {
 				// parsing dates for comparison
 				Date apartmentEndDate = new Date();
 				Date apartmentStartDate = new Date();
