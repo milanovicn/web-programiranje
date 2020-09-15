@@ -36,6 +36,7 @@ import beans.Location;
 import beans.Reservation;
 import beans.enums.ApartmentStatus;
 import beans.enums.SortType;
+import utils.ApartmentFilter;
 import utils.ApartmentSearch;
 import utils.TimeInterval;
 
@@ -201,63 +202,60 @@ public class ApartmentDAO {
 		return a;
 
 	}
-	
-	
-	public Apartment editApartment (Apartment a) {
-		
+
+	public Apartment editApartment(Apartment a) {
+
 		Apartment ap = findById(a.getId());
-		
+
 		ap.setAmenities(a.getAmenities());
 		ap.setImages(a.getImages());
-		
-		
+
 		ap.setCapacity(a.getCapacity());
 		ap.setPrice(a.getPrice());
 		ap.setType(a.getType());
 		ap.setRooms(a.getRooms());
-		
+
 		ap.setCheckIn(a.getCheckIn());
 		ap.setCheckOut(a.getCheckOut());
-		
+
 		ap.setLocationString(a.getLocationString());
 		saveApartments();
 		return ap;
-		
+
 	}
-	
-	public Apartment deleteApartment (long apartmentId) {
-		
+
+	public Apartment deleteApartment(long apartmentId) {
+
 		Apartment a = findById(apartmentId);
-		
-		if(a != null) {
+
+		if (a != null) {
 			a.setDeleted(true);
 			saveApartments();
 			return a;
 		}
-		
+
 		return null;
 	}
-	
-	public Apartment changeApartmentStatus (long apartmentId ) {
-		
+
+	public Apartment changeApartmentStatus(long apartmentId) {
+
 		Apartment a = findById(apartmentId);
-		
-		if(a != null) {
-			
+
+		if (a != null) {
+
 			if (a.getStatus().equals(ApartmentStatus.ACTIVE)) {
 				a.setStatus(ApartmentStatus.INACTIVE);
 				saveApartments();
 				return a;
-			}
-			else {
+			} else {
 				a.setStatus(ApartmentStatus.ACTIVE);
 				saveApartments();
 				return a;
 			}
 		}
-		
+
 		return null;
-		
+
 	}
 
 	private void save(String fileName, String ext, String imageToBeBuffered) {
@@ -358,7 +356,6 @@ public class ApartmentDAO {
 			as.setDateTo("2035-12-31");
 		}
 
-
 		try {
 			searchStartDate = formatter.parse(as.getDateFrom());
 		} catch (ParseException e) {
@@ -370,8 +367,6 @@ public class ApartmentDAO {
 			e.printStackTrace();
 		}
 
-		
-		
 		ArrayList<Apartment> ret = new ArrayList<Apartment>();
 
 		// getting all apartments
@@ -454,12 +449,52 @@ public class ApartmentDAO {
 		for (Apartment a : apartments.values()) {
 			ret.add(a);
 		}
-		
-		ret.sort(Comparator.comparingDouble(Apartment :: getPrice));
-		if(sortType == SortType.DESC) {
+
+		ret.sort(Comparator.comparingDouble(Apartment::getPrice));
+		if (sortType == SortType.DESC) {
 			Collections.reverse(ret);
 		}
-		
+
+		return ret;
+	}
+
+	public ArrayList<Apartment> filterApartments(ApartmentFilter af) {
+
+		ArrayList<Apartment> ret = new ArrayList<Apartment>();
+
+		// getting all apartments
+		for (Apartment a : apartments.values()) {
+			ret.add(a);
+		}
+
+		// iterating trough all apartments and eliminating the ones that are not
+		// corresponding to search
+		for (Apartment a : apartments.values()) {
+
+			// if apartments doesn't meet search condition
+			if (!af.getApartmentType().equals("ALL")) {
+				if (!a.getType().toString().equals(af.getApartmentType())) {
+					// and it is in the ret list
+					if (ret.contains(a)) {
+						// remove it from the ret list
+						ret.remove(a);
+					}
+				}
+			}
+
+			// if apartments doesn't meet search condition
+			if (!af.getAmenities().equals("ALL")) {
+				if (!a.getAmenitiesString().contains(af.getAmenities()+",")) {
+					// and it is in the ret list
+					if (ret.contains(a)) {
+						// remove it from the ret list
+						ret.remove(a);
+					}
+				}
+			}
+
+		}
+
 		return ret;
 	}
 

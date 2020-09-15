@@ -47,10 +47,10 @@
 
     <!--Search-->
     <div class="row ">
-        <h5 class="header col s4 dark grey-text text-darken-3 ">Search Apartments
+        <h6 class="header col s4 dark grey-text  ">Search Apartments
             <a style="margin-left: 15px;"  class="btn-floating  waves-effect waves-light" id="showSearchDiv"><i
                     class="material-icons">search</i></a>
-        </h5>
+        </h6>
     </div>
     <div id="searchDiv">
         <div class="row  s8 15 offset-12" style="margin-top: 20px;">
@@ -122,14 +122,54 @@
 
     </div>
 
+    <!--Filter-->
+    <div class="row ">
+        <h6 class="header col s4 dark grey-text ">Filter Apartments
+            <a style="margin-left: 15px;"  class="btn-floating  waves-effect waves-light" id="showFilterDiv"><i
+                    class="material-icons">filter_list</i></a>
+        </h6>
+    </div>
+    <div id="filterDiv">
+        <div class="row  s12 15 offset-12" style="margin-left:20px; margin-top: 20px;">
+            <form class="col s8" id="filterForm">
+
+                <div class="input-field col s3">
+                    <select id="selectTypeFilter">
+                        <option value="ALL" selected>All</option>
+                        <option value="STUDIO">Studio</option>
+                        <option value="APARTMENT">Apartment</option>
+                    </select>
+                    <label>Apartment type</label>
+                </div>
+
+                <div class="input-field col s3">
+                    <select id="selectAmenitiesFilter">
+                    </select>
+                    <label>Amenities</label>
+                </div>
+
+                <div class="col s2">
+                    <button class="btn waves-effect waves-light right btn-small" type="submit" value="Search"
+                        name="register">Filter
+                        <i class="material-icons right">filter_list</i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+
+
+
     <!--Sort-->
     <div class="row ">
-        <h5 class="header col s4 dark grey-text text-darken-3 ">Sort Apartments By Price
+        <h6 class="header col s4 dark grey-text">Sort Apartments By Price
             <a style="margin-left: 15px;" class="btn-floating  waves-effect waves-light" id="sortAsc"><i
                     class="material-icons">keyboard_arrow_up</i></a>
             <a style="margin-left: 15px;"  class="btn-floating  waves-effect waves-light" id="sortDesc"><i
                     class="material-icons">keyboard_arrow_down</i></a>
-        </h5>
+        </h6>
     </div>
 
     <!--HOST DIV-->
@@ -313,12 +353,22 @@
 
     <!--Admin Div-->
     <div id="adminDiv">
+    
         <div class="row ">
-            <h5 class="header col s4 dark grey-text text-darken-3 ">All apartments</h5>
+            <h5 class="header col s4 dark grey-text text-darken-3 ">Active apartments</h5>
         </div>
 
         <div class="row s6 15 offset-12" style="margin-top: 20px">
-            <ul id="allApartmentsListAdmin" class="collection with-header">
+            <ul id="activeApartmentsListAdmin" class="collection with-header">
+            </ul>
+        </div>
+
+        <div class="row ">
+            <h5 class="header col s4 dark grey-text text-darken-3 ">Inactive apartments</h5>
+        </div>
+
+        <div class="row s6 15 offset-12" style="margin-top: 20px">
+            <ul id="inactiveApartmentsListAdmin" class="collection with-header">
             </ul>
         </div>
 
