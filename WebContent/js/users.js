@@ -1,8 +1,11 @@
+var allUsers;
+var loggedInUserRole = "";
+var loggedInUser = "";
 $(document).ready(function () {
     $("#adminDiv").hide();
     $("#hostDiv").hide();
 
-    
+
     $("#login").show();
     $("#register").show();
     $("#apartments").show();
@@ -24,30 +27,37 @@ $(document).ready(function () {
 
 
     $('select').formSelect();
-    
+    $('#selectGenderSearch').formSelect();
+    $('#selectRoleSearch').formSelect();
+
     whoIsLoggedIn();
     blockUser();
+
+    $("#searchForm").submit(function (event) {
+        event.preventDefault();
+        searchUsers();
+    });
 
     $("#logout").click(function () {
         logOut();
     });
 
-   $("#logoutM").click(function () {
+    $("#logoutM").click(function () {
         logOut();
-    });  
-    
+    });
+
     $("#registrationForm").submit(function (event) {
         registerHost();
     });
 
     $("#createDiv").hide();
-    $("#showCreateDiv").click(function() {
-		$("#createDiv").toggle();
-	});
+    $("#showCreateDiv").click(function () {
+        $("#createDiv").toggle();
+    });
 
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     var elems = document.querySelectorAll('select');
     var instances = M.FormSelect.init(elems);
 });
@@ -58,9 +68,11 @@ function whoIsLoggedIn() {
         contentType: 'application/json',
         success: function (user) {
             if (user != undefined) {
+                loggedInUserRole = user.role;     
+				loggedInUser = user.username;
                 if (user.role == "GUEST") {
                     $("#adminDiv").hide();
-                     $("#hostDiv").hide();
+                    $("#hostDiv").hide();
 
                     $("#login").hide();
                     $("#register").hide();
@@ -112,7 +124,7 @@ function whoIsLoggedIn() {
                     allUsersHost();
                     $("#adminDiv").hide();
                     $("#hostDiv").show();
-                   
+
                     $("#login").hide();
                     $("#register").hide();
                     $("#apartments").show();
@@ -211,15 +223,15 @@ function allUsers() {
             }
 
 
-            
-            var Options="<option value=\"USERNAME\" disabled selected>Choose username</option>";
+
+            var Options = "<option value=\"USERNAME\" disabled selected>Choose username</option>";
             for (var u of users) {
                 if (u.blocked == false) {
-                    Options=Options+"<option value='"+u.username+"'>"+u.username+"</option>";
+                    Options = Options + "<option value='" + u.username + "'>" + u.username + "</option>";
                 }
             }
 
-            
+
             $('#selectUser').empty();
             $('#selectUser').append(Options);
             $("#selectUser").formSelect();
@@ -236,7 +248,7 @@ function allUsers() {
 function blockUser() {
     $("#blockUser").click(function () {
         var username = $('#selectUser :selected').text();
-    
+
         console.log("USERNAME ZA BLOCK: ");
         console.log(username);
         $.ajax({
@@ -272,4 +284,76 @@ function allUsersHost() {
             console.log(errorMessage);
         }
     });
+}
+
+
+function searchUsers() {
+
+    var roleUser = $('#selectRoleSearch :selected').val();
+    console.log(roleUser);
+    var genderUser = $('#selectGenderSearch :selected').val();
+
+    //var nameUser = $('#nameUserSearch').text();
+    //console.log(nameUser);
+    //if (!nameUser) {
+    //    nameUser = "nothing";
+   // }
+
+   var punani = $('input[name="punani"]').val();
+   if (!punani) {
+       punani = "nothing";
+   }
+
+   var nameUser = punani;
+
+    $.post({
+        url: 'rest/searchUsers',
+        data: JSON.stringify({ roleUser, genderUser, nameUser }),
+        contentType: 'application/json',
+        success: function (users) {
+            if (loggedInUser != undefined) {
+
+                if (loggedInUserRole == "ADMIN") {
+                    loadUsersForAdmin(users);
+                } else if (loggedInUserRole == "HOST") {
+                    loadUsersForHost(users);
+                }
+                
+            }
+        },
+        error: function (jqXhr, textStatus, errorMessage) {
+            console.log(errorMessage);
+        }
+    });
+
+
+}
+
+
+function loadUsersForAdmin(users) {
+
+    $("#allUsersList").empty();
+
+    for (var user of users) {
+        $("#allUsersList").append('<div class="row"><ul class="collection with-header" ><li class="collection-header"> <h6 class="grey-text" id="usernameLi">Username: ' + user.username + '  </h6></li>'
+            + '<li class="collection-item grey-text text-darken-3" >Role: ' + user.role + '</li>'
+            + '<li class="collection-item grey-text text-darken-3" >Gender: ' + user.gender + '</li>'
+            + '<li class="collection-item grey-text text-darken-3" >Name: ' + user.name + '</li>'
+            + '<li class="collection-item grey-text text-darken-3" >Lastname: ' + user.lastname + '</li>' + '</ul></div>');
+    }
+
+
+}
+
+function loadUsersForHost(users) {
+
+    for (var user of users) {
+        $("#allUsersListHost").append('<div class="row"><ul class="collection with-header" ><li class="collection-header"> <h6 class="grey-text" id="usernameLi">Username: ' + user.username + '  </h6></li>'
+            + '<li class="collection-item grey-text text-darken-3" >Role: ' + user.role + '</li>'
+            + '<li class="collection-item grey-text text-darken-3" >Gender: ' + user.gender + '</li>'
+            + '<li class="collection-item grey-text text-darken-3" >Name: ' + user.name + '</li>'
+            + '<li class="collection-item grey-text text-darken-3" >Lastname: ' + user.lastname + '</li>' + '</ul></div>');
+
+    }
+
 }

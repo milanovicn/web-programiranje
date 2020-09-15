@@ -40,6 +40,7 @@ import dao.ReservationDAO;
 import dao.UserDAO;
 import utils.ApartmentSearch;
 import utils.TimeInterval;
+import utils.UserSearch;
 
 @Path("")
 public class Services {
@@ -268,44 +269,37 @@ public class Services {
 		return Response.status(200).entity("Apartment created" + a).build();
 	}
 
-	 
 	@POST
 	@Path("/editApartment")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response editApartment(Apartment a, @Context HttpServletRequest request) {
-		
-		
-		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");	
+
+		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
 		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
-		
-		
-		//adding amenities to list
+
+		// adding amenities to list
 		a.setAmenities(new ArrayList<Amenities>());
 		String splitAm[] = a.getAmenitiesString().split(",");
-		for(int i = 0; i<splitAm.length; i++ ) {
+		for (int i = 0; i < splitAm.length; i++) {
 			Amenities foundAmenity = amenities.findById(Long.parseLong(splitAm[i]));
 			a.getAmenities().add(foundAmenity);
 		}
-		
-		
-		//formating images strings
-		for(int i = 0; i<a.getImages().size(); i++ ) {
+
+		// formating images strings
+		for (int i = 0; i < a.getImages().size(); i++) {
 			String img = a.getImages().get(i);
 			String split[] = img.split(",");
-			img=split[1];
+			img = split[1];
 			a.getImages().set(i, img);
 		}
-		
-		
+
 		Apartment ap = apartments.editApartment(a);
-		
-		return Response.status(200).entity("Apartment changed" + ap).build();	
+
+		return Response.status(200).entity("Apartment changed" + ap).build();
 
 	}
-		
-	  
-	
+
 	@GET
 	@Path("/getAllApartments")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -338,20 +332,19 @@ public class Services {
 
 		return Response.status(200).entity("Apartment deleted" + ap).build();
 	}
-	
+
 	@PUT
 	@Path("changeApartmentStatus/{apartmentId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response changeApartmentStatus (@PathParam("apartmentId") Long apartmentId) {
-		
+	public Response changeApartmentStatus(@PathParam("apartmentId") Long apartmentId) {
+
 		ApartmentDAO apartment = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
 
 		Apartment ap = apartment.changeApartmentStatus(apartmentId);
-		
+
 		return Response.status(200).entity("Apartment status changed" + ap).build();
 	}
-	
-	
+
 	@GET
 	@Path("/getAllAmenities")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -421,12 +414,12 @@ public class Services {
 			ret.add(r);
 		}
 
-		//RAND means there is no need for sorting
+		// RAND means there is no need for sorting
 		if (sortType != SortType.RAND) {
-			//sorting reservations ascending order
+			// sorting reservations ascending order
 			ret.sort(Comparator.comparingDouble(Reservation::getCost));
 			if (sortType == SortType.DESC) {
-				//reversing sorted reservations for descending order
+				// reversing sorted reservations for descending order
 				Collections.reverse(ret);
 			}
 		}
@@ -749,7 +742,6 @@ public class Services {
 		return Response.status(200).entity("Comment status changed: " + c).build();
 	}
 
-
 	@POST
 	@Path("/searchApartments")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -789,21 +781,21 @@ public class Services {
 		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
 		HashMap<String, Reservation> reservations = reservationsDAO.getReservations();
 
-		//list that will be searched trough
+		// list that will be searched trough
 		ArrayList<Reservation> reservationsForSearch = new ArrayList<Reservation>();
 
-		//if admin is searching, search in all reservations
+		// if admin is searching, search in all reservations
 		if (loggedInUser.getRole() == UserRole.ADMIN) {
 			// getting all reservations
 			for (Reservation r : reservations.values()) {
 				System.out.println("Reservation r admin: " + r);
 				reservationsForSearch.add(r);
 			}
-		
-		} //if host is searching, search in his reservations 
+
+		} // if host is searching, search in his reservations
 		else if (loggedInUser.getRole() == UserRole.HOST) {
 			ApartmentDAO apartmentsDAO = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
-			//getting apartment ids published by this host
+			// getting apartment ids published by this host
 			ArrayList<Long> idsByHost = apartmentsDAO.findApartmentsByHost(loggedInUser.getUsername());
 			for (Long id : idsByHost) {
 				// getting all reservations for each apartment
@@ -813,21 +805,83 @@ public class Services {
 					reservationsForSearch.add(r);
 				}
 			}
-			
+
 		}
-		
-		//finally searching by username
-		if(!guestUsername.equals("all")) {
+
+		// finally searching by username
+		if (!guestUsername.equals("all")) {
 			ArrayList<Reservation> ret = reservationsDAO.searchByGuest(reservationsForSearch, guestUsername);
 			System.out.println("Reservation search ret: " + ret);
 			return ret;
 		} else {
-			
+
 			System.out.println("Reservation search reservationsForSearch: " + reservationsForSearch);
 			return reservationsForSearch;
 		}
 
-		
 	}
+
+	@POST
+	@Path("/searchUsers")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<User> searchUsers(UserSearch us, @Context HttpServletRequest request) {
+		
+		UserDAO usersDAO = (UserDAO) ctx.getAttribute("userDAO");
+		ApartmentDAO apartmentsDAO = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
+		
+		HttpSession session = request.getSession();
+		User loggedInUser = (User) session.getAttribute("user");
+		
+		ArrayList<User> usersForSearch = new ArrayList<User>();
+		
+		
+		if (loggedInUser.getRole() == UserRole.HOST) {
+			
+			
+			// returns apartments ids that are created by host
+			ArrayList<Long> idsByHost = apartmentsDAO.findApartmentsByHost(loggedInUser.getUsername());
+
+			// ret holds all the reservations that are created for this host's apartments
+			ArrayList<Reservation> reservationsByHost = new ArrayList<Reservation>();
+			
+			for (Long id : idsByHost) {
+				// getting resertvations that are for apartment with id
+				ArrayList<Reservation> retById = reservationsDAO.findReservationsByApartmentId(id);
+				// adding them to final list to return
+				for (Reservation r : retById) {
+					reservationsByHost.add(r);
+					}
+				}
+
+			ArrayList<User> usersByHost = new ArrayList<User>();
+			for (Reservation r : reservationsByHost) {
+				User foundUser = usersDAO.findByUsername(r.getGuest());
+				if (!usersByHost.contains(foundUser))
+					usersByHost.add(foundUser);
+			}
+			
+			usersForSearch = usersByHost;	
+		}
+		
+		
+		else {
+			
+			for (User u : usersDAO.getUsers().values()) {
+				usersForSearch.add(u);
+			}
+					
+		}
+		
+		
+		ArrayList<User> listUsers = new ArrayList<User>();
+		listUsers = usersDAO.searchUsers(usersForSearch, us);
+		return listUsers;
+
+	}
+
+	
+	
 
 }

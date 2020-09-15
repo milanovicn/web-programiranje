@@ -24,6 +24,8 @@ import beans.Reservation;
 import beans.User;
 import beans.enums.ReservationStatus;
 import beans.enums.UserRole;
+import utils.ApartmentSearch;
+import utils.UserSearch;
 
 public class UserDAO {
 	private HashMap<String, User> users = new HashMap<>();
@@ -302,6 +304,58 @@ public class UserDAO {
 		}
 		
 	}
+	
+	public ArrayList<User> searchUsers(ArrayList<User> usersForSearch, UserSearch us) {
+		
+		ArrayList<User> ret = new ArrayList<User>();
+		for(User usr : usersForSearch) {
+			ret.add(usr);
+		}
+		
+		
+		for (User u : usersForSearch) {
+			
+			if (!us.getGenderUser().equals("nothing")) {
+				
+				if (!u.getGender().toString().equals(us.getGenderUser())) {
+					
+					// and it is in the users list
+					if (ret.contains(u)) {
+						// remove it from the users list
+						ret.remove(u);
+					}
+				}	
+			}
+				
+				if (!us.getNameUser().equals("nothing")) {
+					
+					if (!u.getUsername().equals(us.getNameUser())) {
+						
+						// and it is in the users list
+						if (ret.contains(u)) {
+							// remove it from the users list
+							ret.remove(u);
+						}
+					}	
+				}
+				
+				if (!us.getRoleUser().equals("nothing")) {
+					
+					if (!u.getRole().toString().equals(us.getRoleUser())) {
+						
+						// and it is in the users list
+						if (ret.contains(u)) {
+							// remove it from the users list
+							ret.remove(u);
+						}
+					}	
+				}			
+		}
+		
+		return ret;
+	}
+	
+	
 	
 	
 }
