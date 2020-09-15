@@ -200,15 +200,28 @@ public class ApartmentDAO {
 
 	}
 	
-	/*
-	 
-	  
-	  
-	  
-	  
-	  
-	 
-	 */
+	
+	public Apartment editApartment (Apartment a) {
+		
+		Apartment ap = findById(a.getId());
+		
+		ap.setAmenities(a.getAmenities());
+		ap.setImages(a.getImages());
+		
+		
+		ap.setCapacity(a.getCapacity());
+		ap.setPrice(a.getPrice());
+		ap.setType(a.getType());
+		ap.setRooms(a.getRooms());
+		
+		ap.setCheckIn(a.getCheckIn());
+		ap.setCheckOut(a.getCheckOut());
+		
+		ap.setLocationString(a.getLocationString());
+		saveApartments();
+		return ap;
+		
+	}
 	
 	public Apartment deleteApartment (long apartmentId) {
 		
