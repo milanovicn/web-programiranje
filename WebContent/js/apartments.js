@@ -46,6 +46,8 @@ $(document).ready(function () {
 		logOut();
 	});
 
+
+	//create
 	$("#createDiv").hide();
 	$("#showCreateDiv").click(function () {
 		$("#createDiv").toggle();
@@ -57,19 +59,19 @@ $(document).ready(function () {
 
 	});
 
+	//search
 	$("#searchDiv").hide();
 	$("#showSearchDiv").click(function () {
 		$("#searchDiv").toggle();
 	});
-	
+
 	$("#searchForm").submit(function (event) {
 		event.preventDefault();
 		searchApartments();
 
 	});
 
-	loadApartmentsForUser();
-
+	//sotring
 	$("#sortAsc").click(function () {
 		sortApartments("ASC");
 	});
@@ -78,8 +80,19 @@ $(document).ready(function () {
 		sortApartments("DESC");
 	});
 
+	//filter
+	$("#filterDiv").hide();
+	$("#showFilterDiv").click(function () {
+		$("#filterDiv").toggle();
+	});
+	$("#filterForm").submit(function (event) {
+		event.preventDefault();
+		filterApartments();
+
+	});
 
 
+	loadApartmentsForUser();
 });
 
 $(function () {
@@ -299,7 +312,7 @@ function allAmenities() {
 		url: 'rest/getAllAmenities',
 		contentType: 'application/json',
 		success: function (amenities) {
-
+			$("#selectAmenitiesFilter").append('<option value="ALL">All</option>');
 			for (let i = 0; i < amenities.length; i++) {
 				let amenity = amenities[i];
 				if (amenity.deleted != true) {
@@ -314,6 +327,8 @@ function allAmenities() {
 						'</div>'
 
 					);
+					$("#selectAmenitiesFilter").append('<option value="' + amenity.id + '">' + amenity.name + '</option>');
+					$("#selectAmenitiesFilter").formSelect();
 				}
 
 			}
@@ -394,16 +409,6 @@ function searchApartments() {
 		dateTo = JSON.parse(JSON.stringify(dateTo1));
 	}
 
-	console.log(roomsFrom);
-	console.log(roomsTo);
-	console.log(priceFrom);
-	console.log(priceTo);
-
-	console.log(dateFrom);
-	console.log(dateTo);
-	console.log(capacityFrom);
-	console.log(destination);
-
 	console.log(priceF);
 	var priceFrom = priceF;
 	$.post({
@@ -414,7 +419,7 @@ function searchApartments() {
 			allApartments = apartments;
 			console.log(allApartments);
 			if (loggedInUser != undefined) {
-			
+
 				if (loggedInUserRole == "GUEST") {
 					loadApartmentsForUser();
 				} else if (loggedInUserRole == "ADMIN") {
@@ -439,33 +444,37 @@ function loadApartmentsForHost() {
 	for (let i = 0; i < allApartments.length; i++) {
 		let apartment = allApartments[i];
 
-		if (apartment.status == "ACTIVE" && apartment.host == loggedInUser) {
-			$("#activeApartmentsListHost").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
-				apartment.id + '">ID:' + apartment.id + ', ' + apartment.locationString + '</a></li>');
-		}
+		if (apartment.deleted == false) {
+			if (apartment.status == "ACTIVE" && apartment.host == loggedInUser) {
+				$("#activeApartmentsListHost").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
+					apartment.id + '">ID:' + apartment.id + ', ' + apartment.locationString + '</a></li>');
+			}
 
-		if (apartment.status == "INACTIVE" && apartment.host == loggedInUser) {
-			$("#inactiveApartmentsListHost").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
-				apartment.id + '">ID:' + apartment.id + ', ' + apartment.locationString + '</a></li>');
+			if (apartment.status == "INACTIVE" && apartment.host == loggedInUser) {
+				$("#inactiveApartmentsListHost").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
+					apartment.id + '">ID:' + apartment.id + ', ' + apartment.locationString + '</a></li>');
+			}
 		}
-
 	}
-	
+
 }
 
 function loadApartmentsForUser() {
 	$("#activeApartmentsListUser").empty();
+
 	for (let i = 0; i < allApartments.length; i++) {
 		let apartment = allApartments[i];
+		if (apartment.deleted == false) {
+			if (apartment.status == "ACTIVE") {
+				$("#activeApartmentsListUser").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
+					apartment.id + '">' + 'ID:' + apartment.id + ', ' + apartment.locationString + ', hosted by: ' + apartment.host + '</a></li>');
+			}
 
-		if (apartment.status == "ACTIVE") {
-			$("#activeApartmentsListUser").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
-				apartment.id + '">' + 'ID:' + apartment.id + ', ' + apartment.locationString + ', hosted by: ' + apartment.host + '</a></li>');
 		}
 
 	}
 
-	
+
 }
 
 function loadApartmentsForAdmin() {
@@ -473,9 +482,20 @@ function loadApartmentsForAdmin() {
 	for (let i = 0; i < allApartments.length; i++) {
 		let apartment = allApartments[i];
 
-		$("#allApartmentsListAdmin").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
-			apartment.id + '">' + 'ID:' + apartment.id + ', ' + apartment.locationString + ', hosted by: ' + apartment.host + '</a></li>');
+		if (apartment.deleted == false) {
+			if (apartment.status == "ACTIVE") {
+				$("#activeApartmentsListAdmin").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
+					apartment.id + '">ID:' + apartment.id + ', ' + apartment.locationString + ', hosted by: ' + apartment.host + '</a></li>');
+			}
+
+			if (apartment.status == "INACTIVE") {
+				$("#inactiveApartmentsListAdmin").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
+					apartment.id + '">ID:' + apartment.id + ', ' + apartment.locationString + ', hosted by: ' + apartment.host + '</a></li>');
+			}
+
+		}
 	}
+
 
 }
 
@@ -524,13 +544,44 @@ function formatDateISO(dateToFormat) {
 
 function sortApartments(sortType) {
 	$.get({
-		url: 'rest/sortApartments/' + sortType ,
+		url: 'rest/sortApartments/' + sortType,
 		contentType: 'application/json',
 		success: function (apartments) {
 			allApartments = apartments;
 			console.log(allApartments);
 			if (loggedInUser != undefined) {
-			
+
+				if (loggedInUserRole == "GUEST") {
+					loadApartmentsForUser();
+				} else if (loggedInUserRole == "ADMIN") {
+					loadApartmentsForAdmin();
+				} else if (loggedInUserRole == "HOST") {
+					loadApartmentsForHost();
+				} else {
+					loadApartmentsForUser();
+				}
+			}
+		},
+		error: function (jqXhr, textStatus, errorMessage) {
+			console.log(errorMessage);
+		}
+	});
+
+}
+
+function filterApartments() {
+
+	var apartmentType = $('#selectTypeFilter :selected').val();
+	var amenities = $('#selectAmenitiesFilter :selected').val();
+	$.post({
+		url: 'rest/filterApartments/',
+		data: JSON.stringify({ apartmentType, amenities }),
+		contentType: 'application/json',
+		success: function (apartments) {
+			allApartments = apartments;
+			console.log(allApartments);
+			if (loggedInUser != undefined) {
+
 				if (loggedInUserRole == "GUEST") {
 					loadApartmentsForUser();
 				} else if (loggedInUserRole == "ADMIN") {
