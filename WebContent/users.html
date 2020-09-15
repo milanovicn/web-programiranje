@@ -45,6 +45,64 @@
         </div>
     </nav>
 
+    <!--Search-->
+    <div class="row ">
+        <h5 class="header col s4 dark grey-text text-darken-3 ">Search User
+            <a style="margin-left: 15px;" class="btn-floating  waves-effect waves-light" id="showSearchDiv"><i
+                    class="material-icons">search</i></a>
+        </h5>
+    </div>
+
+    <div id="searchDiv">
+        <div class="row  s8 15 offset-12" style="margin-top: 20px;">
+            <form class="col s12" id="searchForm">
+
+                <div class="col s12">
+
+                    <div class="input-field col s2">
+                        <select id="selectRoleSearch">
+                            <option value="nothing" disabled selected>Select role</option>
+                            <option value="ADMIN">ADMIN</option>
+                            <option value="HOST" >HOST</option>
+                            <option value="GUEST">GUEST</option>
+                        </select>
+                        <label for="selectRoleSearch">Role</label>
+                    </div>
+
+                    <div class="input-field col s2">
+                        <select id="selectGenderSearch">
+                            <option value="nothing" disabled selected>Select gender</option>
+                            <option value="M" >MALE</option>
+                            <option value="F" >FEMALE</option>
+                            <option value="OTHER" >OTHER</option>
+                        </select>
+                        <label for="selectGenderSearch">GENDER</label>
+                    </div>
+
+                   <!-- <div class="input-field col s2">
+                        <input id="nameUserSearch" name="nameUserSearch" type="text">
+                        <label for="nameUserSearch">Name</label>
+                    </div>
+                    -->
+
+                    <div class="input-field col s2">
+                        <input id="punani" name="punani" type = "text">
+                        <label for="punani">User name </label>
+                    </div>
+
+                    <div class="col s8">
+                        <button class="btn waves-effect waves-light left btn-small" type="submit" value="Search"
+                            name="searchUserBtn">Search
+                            <i class="material-icons right">search</i>
+                        </button>
+                    </div>
+            </form>
+        </div>
+    </div>
+
+
+
+
 
     <!--All users - ADMIN-->
     <div id="adminDiv">
