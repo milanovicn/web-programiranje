@@ -195,7 +195,9 @@ function loadApartmentDetails() {
             let amenities = apartment.amenities;            
             var lenght1 = Object.keys(amenities).length
             for( i = 0; i < lenght1; i++){
-                $("#amenitiesDet").append( amenities[i].name+" ");
+				if(amenities[i] != true){
+					$("#amenitiesDet").append( amenities[i].name+" ");
+				}
             }
 
            

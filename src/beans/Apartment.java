@@ -33,7 +33,6 @@ public class Apartment {
 	private ArrayList<Reservation> reservations = new ArrayList<Reservation>();
 	private ArrayList<Comment> comments = new ArrayList<Comment>();
 	
-	//lista dostupnosti
 	private ArrayList<TimeInterval> freeDates = new ArrayList<TimeInterval>();
 	private ArrayList<TimeInterval> reservedDates = new ArrayList<TimeInterval>();
 	

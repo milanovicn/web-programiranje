@@ -45,8 +45,116 @@
         </div>
     </nav>
 
+    <!--Search-->
+    <div class="row ">
+        <h5 class="header col s4 dark grey-text text-darken-3 ">Search Apartments
+            <a style="margin-left: 15px;"  class="btn-floating  waves-effect waves-light" id="showSearchDiv"><i
+                    class="material-icons">search</i></a>
+        </h5>
+    </div>
+    <div id="searchDiv">
+        <div class="row  s8 15 offset-12" style="margin-top: 20px;">
+            <form class="col s12" id="searchForm">
+
+                <div class="col s12">
+                    <div class="input-field col s2">
+                        <input id="roomsFrom" name="roomsFrom" type="number" class="validate">
+                        <label for="roomsFrom">Rooms min</label>
+                    </div>
+
+                    <div class="input-field col s2">
+                        <input id="roomsTo" name="roomsTo" type="number" class="validate">
+                        <label for="roomsTo">Rooms max</label>
+                    </div>
+
+                    <!--
+                    <div class="input-field col s2">
+                        <input id="priceFrom" name="priceFrom" type="number" class="validate" >
+                        <label for="priceFrom">Price from</label>
+                    </div>
+-->
+                    <div class="input-field col s2">
+                        <input id="priceF" name="priceF" type="number" class="validate">
+                        <label for="priceF">Price from</label>
+                    </div>
+
+                    <div class="input-field col s2">
+                        <input id="priceTo" name="priceTo" type="number" class="validate">
+                        <label for="priceTo">Price to</label>
+                    </div>
+                </div>
+
+                <div class="col s12">
+                    <div>
+                        <div class="input-field col s2">
+                            <input id="dateFrom" name="dateFrom" type="text" class="validate datepicker">
+                            <label for="dateFrom">Check-in date</label>
+                        </div>
+
+                        <div class="input-field col s2">
+                            <input id="dateTo" name="dateTo" type="text" class="validate datepicker">
+                            <label for="dateTo">Check-out date</label>
+                        </div>
+                    </div>
+
+
+                    <div class="input-field col s2">
+                        <input id="destination" name="destination" type="text" class="validate">
+                        <label for="destination">Destination</label>
+                    </div>
+
+                    <div class="input-field col s2">
+                        <input id="capacityFrom" name="capacityFrom" type="number" class="validate">
+                        <label for="capacityFrom">Minimum capacity</label>
+                    </div>
+
+                </div>
+
+
+                <div class="col s8">
+                    <button class="btn waves-effect waves-light right btn-small" type="submit" value="Search"
+                        name="register">Search
+                        <i class="material-icons right">search</i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <!--Sort-->
+    <div class="row ">
+        <h5 class="header col s4 dark grey-text text-darken-3 ">Sort Apartments By Price
+            <a style="margin-left: 15px;" class="btn-floating  waves-effect waves-light" id="sortAsc"><i
+                    class="material-icons">keyboard_arrow_up</i></a>
+            <a style="margin-left: 15px;"  class="btn-floating  waves-effect waves-light" id="sortDesc"><i
+                    class="material-icons">keyboard_arrow_down</i></a>
+        </h5>
+    </div>
+
     <!--HOST DIV-->
     <div id="hostDiv">
+
+        <!--My Apartments-->
+
+        <div class="row ">
+            <h5 class="header col s4 dark grey-text text-darken-3 ">My apartments</h5>
+        </div>
+
+        <div class="row s6 15 offset-12" style="margin-top: 20px">
+            <ul id="activeApartmentsListHost" class="collection with-header">
+            </ul>
+        </div>
+
+        <div class="row ">
+            <h5 class="header col s4 dark grey-text text-darken-3 ">My inactive apartments</h5>
+        </div>
+
+        <div class="row s6 15 offset-12" style="margin-top: 20px">
+            <ul id="inactiveApartmentsListHost" class="collection with-header">
+            </ul>
+        </div>
+
         <!--Create apartment-->
         <div class="row ">
             <h5 class="header col s4 dark grey-text text-darken-3 ">Create new apartment
@@ -188,29 +296,8 @@
             </div>
 
         </div>
-        <!--My Apartments-->
-
-        <div class="row ">
-            <h5 class="header col s4 dark grey-text text-darken-3 ">My apartments</h5>
-        </div>
-
-        <div class="row s6 15 offset-12" style="margin-top: 20px">
-            <ul  id="activeApartmentsListHost" class="collection with-header">
-            </ul>
-        </div>
-
-        <div class="row ">
-            <h5 class="header col s4 dark grey-text text-darken-3 ">My inactive apartments</h5>
-        </div>
-
-        <div class="row s6 15 offset-12" style="margin-top: 20px">
-            <ul  id="inactiveApartmentsListHost" class="collection with-header">
-            </ul>
-        </div>
-
-
     </div>
-    
+
     <!--Users Div-->
     <div id="userDiv">
         <div class="row ">
@@ -218,7 +305,7 @@
         </div>
 
         <div class="row s6 15 offset-12" style="margin-top: 20px">
-            <ul  id="activeApartmentsListUser" class="collection with-header">
+            <ul id="activeApartmentsListUser" class="collection with-header">
             </ul>
         </div>
 
@@ -231,7 +318,7 @@
         </div>
 
         <div class="row s6 15 offset-12" style="margin-top: 20px">
-            <ul  id="allApartmentsListAdmin" class="collection with-header">
+            <ul id="allApartmentsListAdmin" class="collection with-header">
             </ul>
         </div>
 

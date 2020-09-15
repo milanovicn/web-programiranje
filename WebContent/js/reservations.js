@@ -1,3 +1,7 @@
+var allReservations = [];
+var loggedInUser = "";
+var loggedInUserRole = "";
+
 $(document).ready(function () {
 	$("#hostDiv").hide();
 	$("#userDiv").show();
@@ -27,7 +31,12 @@ $(document).ready(function () {
 	$("#usersM").hide();
 	$("#logoutM").hide();
 
-
+	$("#searchDiv").hide();
+	$("#searchDivHeaderDiv").hide();
+	
+	$("#showSearchDiv").click(function () {
+		$("#searchDiv").toggle();
+	});
 	whoIsLoggedIn();
 
 	$("#logout").click(function () {
@@ -36,7 +45,19 @@ $(document).ready(function () {
 	$("#logoutM").click(function () {
 		logOut();
 	});
-	
+
+	$("#sortAsc").click(function () {
+		sortReservations("ASC");
+	});
+
+	$("#sortDesc").click(function () {
+		sortReservations("DESC");
+	});
+	$("#searchForm").submit(function (event) {
+		event.preventDefault();
+		searchReservations();
+
+	});
 });
 
 function whoIsLoggedIn() {
@@ -47,9 +68,12 @@ function whoIsLoggedIn() {
 			
 			if (user != undefined) {
 				loggedInUser = user.username;
-
+				loggedInUserRole = user.role;
 				if (user.role == "GUEST") {
-					loadReservationsForUser();
+					loadReservationsForUser("RAND");
+					$("#searchDivHeaderDiv").hide();
+
+
 					$("#hostDiv").hide();
 					$("#userDiv").show();
 					$("#adminDiv").hide();
@@ -75,7 +99,10 @@ function whoIsLoggedIn() {
 					console.log(user);
 
 				} else if (user.role == "ADMIN") {
-					loadReservationsForAdmin();
+					loadReservationsForAdmin("RAND");
+					$("#searchDivHeaderDiv").show();
+
+
 					$("#hostDiv").hide();
 					$("#userDiv").hide();
 					$("#adminDiv").show();
@@ -103,7 +130,10 @@ function whoIsLoggedIn() {
 					console.log(user);
 
 				} else if (user.role == "HOST") {
-					loadReservationsForHost();
+					loadReservationsForHost("RAND");
+					$("#searchDivHeaderDiv").show();
+
+
 					$("#hostDiv").show();
 					$("#userDiv").hide();
 					$("#adminDiv").hide();
@@ -130,7 +160,9 @@ function whoIsLoggedIn() {
 					console.log(user);
 
 				} else {
-					loadApartmentsForUser();
+					$("#searchDivHeaderDiv").hide();
+
+					//loadApartmentsForUser("RAND");
 					//$("#hostDiv").hide();
 					//$("#userDiv").show();
 					//$("#adminDiv").hide();
@@ -162,28 +194,14 @@ function logOut() {
 	});
 }
 
-function loadReservationsForAdmin() {
+function loadReservationsForAdmin(sortType) {
 
     $.get({
-		url: 'rest/getAllReservations',
+		url: 'rest/getAllReservations/' + sortType,
 		contentType: 'application/json',
 		success: function (reservations) {
-            var allReservations = reservations;
-
-            for (let i = 0; i < allReservations.length; i++) {
-                let reservation = allReservations[i];
-        
-                $("#allReservationsAdmin").append('<div class="col s6"><ul class="collection with-header" >'
-                + '<li class="collection-item grey-text text-darken-3" >Dates: ' + reservation.startDate+ ', ' + reservation.endDate + '</li>'
-                + '<li class="collection-item grey-text text-darken-3" >Guest: ' + reservation.guest + '</li>'
-                + '<li class="collection-item grey-text text-darken-3" >Apartment id: ' + reservation.apartmentId + '</li>'
-                + '<li class="collection-item grey-text text-darken-3" >Message: ' + reservation.message + '</li>'
-                + '<li class="collection-item grey-text text-darken-3" >Stays: ' + reservation.stays + '</li>'
-                + '<li class="collection-item grey-text text-darken-3" >Cost: ' + reservation.cost + '</li>' 
-                + '<li class="collection-item grey-text text-darken-3" >Status: ' + reservation.status + '</li>'
-                + '</ul></div>');
-
-            }
+             allReservations = reservations;
+			 fillInReservationsAdmin();
 
 		},
 		error: function (jqXhr, textStatus, errorMessage) {
@@ -194,38 +212,14 @@ function loadReservationsForAdmin() {
 	
 }
 
-function loadReservationsForUser() {
+function loadReservationsForUser(sortType) {
 
     $.get({
-		url: 'rest/getAllReservationsUser',
+		url: 'rest/getAllReservationsUser/' + sortType,
 		contentType: 'application/json',
 		success: function (reservations) {
-            var allReservations = reservations;
-
-            for (let i = 0; i < allReservations.length; i++) {
-                let reservation = allReservations[i];
-                var htmlCode = '<div style="margin-top: 50px" class="col s12"><ul class="collection with-header" >'
-                + '<li class="collection-item grey-text text-darken-3" >Dates: ' + reservation.startDate+ ', ' + reservation.endDate + '</li>'
-                + '<li class="collection-item grey-text text-darken-3" >Apartment id: ' + reservation.apartmentId + '</li>'
-                + '<li class="collection-item grey-text text-darken-3" >Message: ' + reservation.message + '</li>'
-                + '<li class="collection-item grey-text text-darken-3" >Stays: ' + reservation.stays + '</li>'
-                + '<li class="collection-item grey-text text-darken-3" >Cost: ' + reservation.cost + '</li>' 
-                + '<li class="collection-item grey-text text-darken-3" >Status: ' + reservation.status + '</li></ul>';
-
-                if(reservation.status == "CREATED" || reservation.status == "ACCEPTED"){
-                    var btnCancel = $('</div><div class="col s12"><button id="cancelReservation" class="btn waves-effect waves-light light-blue ">Cancel<i class="material-icons right">send</i></button></div>');
-                    btnCancel.click(cancelReservation(reservation));
-                    $("#allReservationsUser").append(htmlCode).append(btnCancel).append('</div>');
-                } else if((reservation.status == "REJECTED" || reservation.status == "ENDED") && reservation.commented == false){
-					var commentText = $('</div><div class="col s12"><input id="commentText'+ reservation.apartmentId + '" name="commentText" type="text" class="validate" required><label for="commentText">Comment</label></div>');
-					var commentRate = $('<div class="col s12"><input id="commentRate'+ reservation.apartmentId + '" name="commentRate" type="number" class="validate" required><label for="commentRate">Rate</label></div>');
-                    var btnComment = $('<div class="col s12"><button id="commentReservation" class="btn waves-effect waves-light light-blue ">Comment<i class="material-icons right">send</i></button></div>');
-                    btnComment.click(commentReservation(reservation, commentText, commentRate));
-                    $("#allReservationsUser").append(htmlCode).append(commentText).append(commentRate).append(btnComment).append('</div>');
-                } else {
-                    $("#allReservationsUser").append(htmlCode).append('</div>');
-                }
-            }
+             allReservations = reservations;
+			 fillInReservationsUser();
 
 		},
 		error: function (jqXhr, textStatus, errorMessage) {
@@ -272,41 +266,14 @@ function commentReservation(reservation) {
 }
 
 
-function loadReservationsForHost() {
+function loadReservationsForHost(sortType) {
 
     $.get({
-		url: 'rest/getAllReservationsHost',
+		url: 'rest/getAllReservationsHost/' + sortType,
 		contentType: 'application/json',
 		success: function (reservations) {
-            var allReservations = reservations;
-
-            for (let i = 0; i < allReservations.length; i++) {
-                let reservation = allReservations[i];
-                var htmlCode = '<div style="margin-top: 50px" class="col s12"><ul class="collection with-header" >'
-                + '<li class="collection-item grey-text text-darken-3" >Dates: ' + reservation.startDate+ ', ' + reservation.endDate + '</li>'
-				+ '<li class="collection-item grey-text text-darken-3" >Apartment id: ' + reservation.apartmentId + '</li>'
-				+ '<li class="collection-item grey-text text-darken-3" >Guest: ' + reservation.guest + '</li>'
-                + '<li class="collection-item grey-text text-darken-3" >Message: ' + reservation.message + '</li>'
-                + '<li class="collection-item grey-text text-darken-3" >Stays: ' + reservation.stays + '</li>'
-                + '<li class="collection-item grey-text text-darken-3" >Cost: ' + reservation.cost + '</li>' 
-                + '<li class="collection-item grey-text text-darken-3" >Status: ' + reservation.status + '</li></ul>';
-
-                if(reservation.status == "CREATED"){
-                    var btnAccept = $('</div><div class="col s6"><button id="acceptReservation" class="btn waves-effect waves-light light-blue ">Accept<i class="material-icons right">send</i></button></div>');
-					btnAccept.click(acceptReservation(reservation));
-					var btnReject = $('</div><div class="col s6"><button id="rejectReservation" class="btn waves-effect waves-light light-blue ">Reject<i class="material-icons right">send</i></button></div>');
-                    btnReject.click(rejectReservation(reservation));
-					
-					$("#allReservationsHost").append(htmlCode).append(btnAccept).append(btnReject).append('</div>');
-                } else if(reservation.status == "ACCEPTED"){
-                    var btnEnd= $('</div><div class="col s12"><button id="endReservation" class="btn waves-effect waves-light light-blue ">End<i class="material-icons right">send</i></button></div>');
-					btnEnd.click(endReservation(reservation));
-					
-					$("#allReservationsHost").append(htmlCode).append(btnEnd).append('</div>');
-                } else {
-                    $("#allReservationsHost").append(htmlCode).append('</div>');
-                }
-            }
+             allReservations = reservations;
+			fillInReservationsHost();
 
 		},
 		error: function (jqXhr, textStatus, errorMessage) {
@@ -366,3 +333,131 @@ function endReservation(reservation) {
     }
 }
 
+
+function sortReservations(sortType) {
+	if (loggedInUser != undefined) {
+			
+		if (loggedInUserRole == "GUEST") {
+			loadReservationsForUser(sortType);
+		} else if (loggedInUserRole == "ADMIN") {
+			loadReservationsForAdmin(sortType);
+		} else if (loggedInUserRole == "HOST") {
+			loadReservationsForHost(sortType);
+		} else {
+			loadReservationsForUser(sortType);
+		}
+	}
+
+}
+
+function searchReservations() {
+	var guestUsername = $('input[name="guestUsername"]').val();
+	if (!guestUsername) {
+		guestUsername = "all";
+	}
+	$.get({
+		url: 'rest/searchReservations/' + guestUsername,
+		contentType: 'application/json',
+		success: function (reservations) {
+			allReservations = reservations;
+			console.log(allReservations);
+			if (loggedInUser != undefined) {
+			
+				if (loggedInUserRole == "GUEST") {
+					fillInReservationsUser();
+				} else if (loggedInUserRole == "ADMIN") {
+					fillInReservationsAdmin();
+				} else if (loggedInUserRole == "HOST") {
+					fillInReservationsHost();
+				} else {
+					fillInReservationsUser();
+				}
+			}
+		},
+		error: function (jqXhr, textStatus, errorMessage) {
+			console.log(errorMessage);
+		}
+	});
+
+
+}
+
+function fillInReservationsUser() {
+	$("#allReservationsUser").empty();
+	for (let i = 0; i < allReservations.length; i++) {
+		let reservation = allReservations[i];
+		var htmlCode = '<div style="margin-top: 50px" class="col s12"><ul class="collection with-header" >'
+		+ '<li class="collection-item grey-text text-darken-3" >Dates: ' + reservation.startDate+ ', ' + reservation.endDate + '</li>'
+		+ '<li class="collection-item grey-text text-darken-3" >Apartment id: ' + reservation.apartmentId + '</li>'
+		+ '<li class="collection-item grey-text text-darken-3" >Message: ' + reservation.message + '</li>'
+		+ '<li class="collection-item grey-text text-darken-3" >Stays: ' + reservation.stays + '</li>'
+		+ '<li class="collection-item grey-text text-darken-3" >Cost: ' + reservation.cost + '</li>' 
+		+ '<li class="collection-item grey-text text-darken-3" >Status: ' + reservation.status + '</li></ul>';
+
+		if(reservation.status == "CREATED" || reservation.status == "ACCEPTED"){
+			var btnCancel = $('</div><div class="col s12"><button id="cancelReservation" class="btn waves-effect waves-light light-blue ">Cancel<i class="material-icons right">send</i></button></div>');
+			btnCancel.click(cancelReservation(reservation));
+			$("#allReservationsUser").append(htmlCode).append(btnCancel).append('</div>');
+		} else if((reservation.status == "REJECTED" || reservation.status == "ENDED") && reservation.commented == false){
+			var commentText = $('</div><div class="col s12"><input id="commentText'+ reservation.apartmentId + '" name="commentText" type="text" class="validate" required><label for="commentText">Comment</label></div>');
+			var commentRate = $('<div class="col s12"><input id="commentRate'+ reservation.apartmentId + '" name="commentRate" type="number" class="validate" required><label for="commentRate">Rate</label></div>');
+			var btnComment = $('<div class="col s12"><button id="commentReservation" class="btn waves-effect waves-light light-blue ">Comment<i class="material-icons right">send</i></button></div>');
+			btnComment.click(commentReservation(reservation, commentText, commentRate));
+			$("#allReservationsUser").append(htmlCode).append(commentText).append(commentRate).append(btnComment).append('</div>');
+		} else {
+			$("#allReservationsUser").append(htmlCode).append('</div>');
+		}
+	}
+
+}
+
+
+function fillInReservationsHost() {
+	$("#allReservationsHost").empty();
+	for (let i = 0; i < allReservations.length; i++) {
+		let reservation = allReservations[i];
+		var htmlCode = '<div style="margin-top: 50px" class="col s12"><ul class="collection with-header" >'
+		+ '<li class="collection-item grey-text text-darken-3" >Dates: ' + reservation.startDate+ ', ' + reservation.endDate + '</li>'
+		+ '<li class="collection-item grey-text text-darken-3" >Apartment id: ' + reservation.apartmentId + '</li>'
+		+ '<li class="collection-item grey-text text-darken-3" >Guest: ' + reservation.guest + '</li>'
+		+ '<li class="collection-item grey-text text-darken-3" >Message: ' + reservation.message + '</li>'
+		+ '<li class="collection-item grey-text text-darken-3" >Stays: ' + reservation.stays + '</li>'
+		+ '<li class="collection-item grey-text text-darken-3" >Cost: ' + reservation.cost + '</li>' 
+		+ '<li class="collection-item grey-text text-darken-3" >Status: ' + reservation.status + '</li></ul>';
+
+		if(reservation.status == "CREATED"){
+			var btnAccept = $('</div><div class="col s6"><button id="acceptReservation" class="btn waves-effect waves-light light-blue ">Accept<i class="material-icons right">send</i></button></div>');
+			btnAccept.click(acceptReservation(reservation));
+			var btnReject = $('</div><div class="col s6"><button id="rejectReservation" class="btn waves-effect waves-light light-blue ">Reject<i class="material-icons right">send</i></button></div>');
+			btnReject.click(rejectReservation(reservation));
+			
+			$("#allReservationsHost").append(htmlCode).append(btnAccept).append(btnReject).append('</div>');
+		} else if(reservation.status == "ACCEPTED"){
+			var btnEnd= $('</div><div class="col s12"><button id="endReservation" class="btn waves-effect waves-light light-blue ">End<i class="material-icons right">send</i></button></div>');
+			btnEnd.click(endReservation(reservation));
+			
+			$("#allReservationsHost").append(htmlCode).append(btnEnd).append('</div>');
+		} else {
+			$("#allReservationsHost").append(htmlCode).append('</div>');
+		}
+	}
+	
+}
+
+function fillInReservationsAdmin() {
+	$("#allReservationsAdmin").empty();
+	for (let i = 0; i < allReservations.length; i++) {
+		let reservation = allReservations[i];
+
+		$("#allReservationsAdmin").append('<div class="col s6"><ul class="collection with-header" >'
+		+ '<li class="collection-item grey-text text-darken-3" >Dates: ' + reservation.startDate+ ', ' + reservation.endDate + '</li>'
+		+ '<li class="collection-item grey-text text-darken-3" >Guest: ' + reservation.guest + '</li>'
+		+ '<li class="collection-item grey-text text-darken-3" >Apartment id: ' + reservation.apartmentId + '</li>'
+		+ '<li class="collection-item grey-text text-darken-3" >Message: ' + reservation.message + '</li>'
+		+ '<li class="collection-item grey-text text-darken-3" >Stays: ' + reservation.stays + '</li>'
+		+ '<li class="collection-item grey-text text-darken-3" >Cost: ' + reservation.cost + '</li>' 
+		+ '<li class="collection-item grey-text text-darken-3" >Status: ' + reservation.status + '</li>'
+		+ '</ul></div>');
+
+	}
+}	
