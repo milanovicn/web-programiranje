@@ -201,6 +201,64 @@ public class ApartmentDAO {
 		return a;
 
 	}
+	
+	
+	public Apartment editApartment (Apartment a) {
+		
+		Apartment ap = findById(a.getId());
+		
+		ap.setAmenities(a.getAmenities());
+		ap.setImages(a.getImages());
+		
+		
+		ap.setCapacity(a.getCapacity());
+		ap.setPrice(a.getPrice());
+		ap.setType(a.getType());
+		ap.setRooms(a.getRooms());
+		
+		ap.setCheckIn(a.getCheckIn());
+		ap.setCheckOut(a.getCheckOut());
+		
+		ap.setLocationString(a.getLocationString());
+		saveApartments();
+		return ap;
+		
+	}
+	
+	public Apartment deleteApartment (long apartmentId) {
+		
+		Apartment a = findById(apartmentId);
+		
+		if(a != null) {
+			a.setDeleted(true);
+			saveApartments();
+			return a;
+		}
+		
+		return null;
+	}
+	
+	public Apartment changeApartmentStatus (long apartmentId ) {
+		
+		Apartment a = findById(apartmentId);
+		
+		if(a != null) {
+			
+			if (a.getStatus().equals(ApartmentStatus.ACTIVE)) {
+				a.setStatus(ApartmentStatus.INACTIVE);
+				saveApartments();
+				return a;
+			}
+			else {
+				a.setStatus(ApartmentStatus.ACTIVE);
+				saveApartments();
+				return a;
+			}
+		}
+		
+		return null;
+		
+	}
 
 	private void save(String fileName, String ext, String imageToBeBuffered) {
 

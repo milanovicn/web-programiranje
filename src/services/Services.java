@@ -268,6 +268,44 @@ public class Services {
 		return Response.status(200).entity("Apartment created" + a).build();
 	}
 
+	 
+	@POST
+	@Path("/editApartment")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response editApartment(Apartment a, @Context HttpServletRequest request) {
+		
+		
+		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");	
+		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
+		
+		
+		//adding amenities to list
+		a.setAmenities(new ArrayList<Amenities>());
+		String splitAm[] = a.getAmenitiesString().split(",");
+		for(int i = 0; i<splitAm.length; i++ ) {
+			Amenities foundAmenity = amenities.findById(Long.parseLong(splitAm[i]));
+			a.getAmenities().add(foundAmenity);
+		}
+		
+		
+		//formating images strings
+		for(int i = 0; i<a.getImages().size(); i++ ) {
+			String img = a.getImages().get(i);
+			String split[] = img.split(",");
+			img=split[1];
+			a.getImages().set(i, img);
+		}
+		
+		
+		Apartment ap = apartments.editApartment(a);
+		
+		return Response.status(200).entity("Apartment changed" + ap).build();	
+
+	}
+		
+	  
+	
 	@GET
 	@Path("/getAllApartments")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -289,6 +327,31 @@ public class Services {
 		return ret;
 	}
 
+	@DELETE
+	@Path("/deleteApartment/{apartmentId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteApartment(@PathParam("apartmentId") Long apartmentId) {
+
+		ApartmentDAO apartment = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+
+		Apartment ap = apartment.deleteApartment(apartmentId);
+
+		return Response.status(200).entity("Apartment deleted" + ap).build();
+	}
+	
+	@PUT
+	@Path("changeApartmentStatus/{apartmentId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response changeApartmentStatus (@PathParam("apartmentId") Long apartmentId) {
+		
+		ApartmentDAO apartment = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+
+		Apartment ap = apartment.changeApartmentStatus(apartmentId);
+		
+		return Response.status(200).entity("Apartment status changed" + ap).build();
+	}
+	
+	
 	@GET
 	@Path("/getAllAmenities")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -685,6 +748,7 @@ public class Services {
 
 		return Response.status(200).entity("Comment status changed: " + c).build();
 	}
+
 
 	@POST
 	@Path("/searchApartments")
