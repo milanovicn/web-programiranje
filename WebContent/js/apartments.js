@@ -61,6 +61,7 @@ $(document).ready(function () {
 	$("#showSearchDiv").click(function () {
 		$("#searchDiv").toggle();
 	});
+	
 	$("#searchForm").submit(function (event) {
 		event.preventDefault();
 		searchApartments();
