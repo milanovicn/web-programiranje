@@ -9,10 +9,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
@@ -26,15 +30,13 @@ import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import Decoder.BASE64Decoder;
-import beans.Amenities;
 import beans.Apartment;
 import beans.Comment;
 import beans.Location;
 import beans.Reservation;
-import beans.User;
 import beans.enums.ApartmentStatus;
-import beans.enums.UserRole;
+import beans.enums.SortType;
+import utils.ApartmentSearch;
 import utils.TimeInterval;
 
 public class ApartmentDAO {
@@ -341,6 +343,122 @@ public class ApartmentDAO {
 
 		saveApartments();
 		return null;
+	}
+
+	public ArrayList<Apartment> searchApartment(ApartmentSearch as) {
+
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date searchEndDate = new Date();
+		Date searchStartDate = new Date();
+		if (as.getDateFrom().equals("all")) {
+			as.setDateFrom("1990-01-01");
+		}
+
+		if (as.getDateTo().equals("all")) {
+			as.setDateTo("2035-12-31");
+		}
+
+
+		try {
+			searchStartDate = formatter.parse(as.getDateFrom());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		try {
+			searchEndDate = formatter.parse(as.getDateTo());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		ArrayList<Apartment> ret = new ArrayList<Apartment>();
+
+		// getting all apartments
+		for (Apartment a : apartments.values()) {
+			ret.add(a);
+		}
+
+		// iterating trough all apartments and eliminating the ones that are not
+		// corresponding to search
+		for (Apartment a : apartments.values()) {
+
+			// if apartments doesn't meet search condition
+			if (!as.getDestination().equals("all")) {
+				if (!a.getLocationString().toLowerCase().contains(as.getDestination().toLowerCase())) {
+					// and it is in the ret list
+					if (ret.contains(a)) {
+						// remove it from the ret list
+						ret.remove(a);
+					}
+				}
+			}
+
+			if (as.getCapacityFrom() != 0) {
+				if (a.getCapacity() < as.getCapacityFrom()) {
+					if (ret.contains(a)) {
+						ret.remove(a);
+					}
+				}
+			}
+
+			if (as.getPriceTo() != 123456789 || as.getPriceFrom() != -123456789) {
+				if (!(a.getPrice() <= as.getPriceTo() && a.getPrice() >= as.getPriceFrom())) {
+					if (ret.contains(a)) {
+						ret.remove(a);
+					}
+				}
+			}
+
+			if (as.getRoomsTo() != 123456789 || as.getRoomsFrom() != -123456789) {
+				if (!(a.getRooms() <= as.getRoomsTo() && a.getRooms() >= as.getRoomsFrom())) {
+					if (ret.contains(a)) {
+						ret.remove(a);
+					}
+				}
+			}
+
+			if (!as.getDateFrom().equals("all") || !as.getDateTo().equals("all")) {
+				// parsing dates for comparison
+				Date apartmentEndDate = new Date();
+				Date apartmentStartDate = new Date();
+
+				try {
+					apartmentStartDate = formatter.parse(a.getStartDate());
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				try {
+					apartmentEndDate = formatter.parse(a.getEndDate());
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+
+				if (!(searchStartDate.after(apartmentStartDate) && searchEndDate.before(apartmentEndDate))) {
+					if (ret.contains(a)) {
+						ret.remove(a);
+					}
+				}
+			}
+		}
+
+		System.out.println("RET : " + ret);
+
+		return ret;
+	}
+
+	public ArrayList<Apartment> sortApartments(SortType sortType) {
+		ArrayList<Apartment> ret = new ArrayList<Apartment>();
+
+		// getting all apartments
+		for (Apartment a : apartments.values()) {
+			ret.add(a);
+		}
+		
+		ret.sort(Comparator.comparingDouble(Apartment :: getPrice));
+		if(sortType == SortType.DESC) {
+			Collections.reverse(ret);
+		}
+		
+		return ret;
 	}
 
 }

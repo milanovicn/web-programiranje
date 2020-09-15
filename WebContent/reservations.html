@@ -43,42 +43,81 @@
 
         </div>
     </nav>
+    <!--Search-->
+    <div class="row " id="searchDivHeaderDiv">
+        <h6 class="header col s4 dark grey-text  ">Search By Guest
+            <a style="margin-left: 15px;" class="btn-floating  waves-effect waves-light" id="showSearchDiv"><i
+                    class="material-icons">search</i></a>
+        </h6>
+    </div>
+    <div id="searchDiv">
+        <div class="row  s12 15 offset-12" style="margin-top: 20px;">
+            <form class="col s8" id="searchForm">
 
-     <!--Admin Div-->
-     <div id="adminDiv">
+
+
+                <div class="input-field col s3">
+                    <input id="guestUsername" name="guestUsername" type="text">
+                    <label for="guestUsername">Guest Username</label>
+                </div>
+
+
+
+                <div class="col s2">
+                    <button class="btn waves-effect waves-light right btn-big" type="submit" value="Search"
+                        name="register">Search
+                        <i class="material-icons right">search</i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+    <!--Sort-->
+    <div class="row ">
+        <h6 class="header col s4 dark grey-text ">Sort Reservations By Price
+            <a style="margin-left: 15px;" class="btn-floating  waves-effect waves-light" id="sortAsc"><i
+                    class="material-icons">keyboard_arrow_up</i></a>
+            <a style="margin-left: 15px;" class="btn-floating  waves-effect waves-light" id="sortDesc"><i
+                    class="material-icons">keyboard_arrow_down</i></a>
+        </h6>
+    </div>
+
+    <!--Admin Div-->
+    <div id="adminDiv">
         <div class="row ">
             <h5 class="header col s4 dark grey-text text-darken-3 ">All reservations</h5>
         </div>
 
         <div class="row s6 15 offset-12" style="margin-top: 20px">
-            <div  id="allReservationsAdmin">
+            <div id="allReservationsAdmin">
             </div>
         </div>
 
     </div>
 
-     <!--User Div-->
-     <div id="userDiv">
+    <!--User Div-->
+    <div id="userDiv">
         <div class="row ">
             <h5 class="header col s4 dark grey-text text-darken-3 ">My reservations</h5>
         </div>
 
         <div class="row  offset-12" style="margin-top: 20px">
-            <div class="col s6"  id="allReservationsUser">
+            <div class="col s6" id="allReservationsUser">
             </div>
         </div>
 
     </div>
 
 
-     <!--Host Div-->
-     <div id="hostDiv">
+    <!--Host Div-->
+    <div id="hostDiv">
         <div class="row ">
             <h5 class="header col s4 dark grey-text text-darken-3 ">Reservations of my apartments</h5>
         </div>
 
         <div class="row  offset-12" style="margin-top: 20px">
-            <div class="col s6"  id="allReservationsHost">
+            <div class="col s6" id="allReservationsHost">
             </div>
         </div>
 

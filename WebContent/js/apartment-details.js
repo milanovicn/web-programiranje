@@ -202,6 +202,7 @@ function loadApartmentDetails() {
 		url: 'rest/getApartmentById/' + apartmentId,
 		contentType: 'application/json',
 		success: function (apartmentGet) {
+
 			apartment = apartmentGet;
 			$("#statusDet").append(apartment.status);
 			$("#priceDet").append(apartment.price + ' \u20AC');
@@ -217,6 +218,7 @@ function loadApartmentDetails() {
 			var lenght1 = Object.keys(amenities).length
 			for (i = 0; i < lenght1; i++) {
 				$("#amenitiesDet").append(amenities[i].name + " ");
+
 			}
 
 

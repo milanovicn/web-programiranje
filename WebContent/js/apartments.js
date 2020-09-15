@@ -1,7 +1,7 @@
 var image2 = [];
 var allApartments = [];
 var loggedInUser = "";
-
+var loggedInUserRole = "";
 $(document).ready(function () {
 	getAllApartments();
 
@@ -57,7 +57,27 @@ $(document).ready(function () {
 
 	});
 
+	$("#searchDiv").hide();
+	$("#showSearchDiv").click(function () {
+		$("#searchDiv").toggle();
+	});
+	$("#searchForm").submit(function (event) {
+		event.preventDefault();
+		searchApartments();
+
+	});
+
 	loadApartmentsForUser();
+
+	$("#sortAsc").click(function () {
+		sortApartments("ASC");
+	});
+
+	$("#sortDesc").click(function () {
+		sortApartments("DESC");
+	});
+
+
 
 });
 
@@ -106,7 +126,7 @@ function whoIsLoggedIn() {
 
 			if (user != undefined) {
 				loggedInUser = user.username;
-
+				loggedInUserRole = user.role;
 				if (user.role == "GUEST") {
 					loadApartmentsForUser();
 					$("#hostDiv").hide();
@@ -278,7 +298,7 @@ function allAmenities() {
 		url: 'rest/getAllAmenities',
 		contentType: 'application/json',
 		success: function (amenities) {
-		
+
 			for (let i = 0; i < amenities.length; i++) {
 				let amenity = amenities[i];
 				if (amenity.deleted != true) {
@@ -318,13 +338,109 @@ function getAllApartments() {
 
 }
 
+function searchApartments() {
+
+	var roomsFrom = $('input[name="roomsFrom"]').val();
+	if (!roomsFrom) {
+		roomsFrom = -123456789;
+	}
+
+	var roomsTo = $('input[name="roomsTo"]').val();
+	if (!roomsTo) {
+		roomsTo = 123456789;
+	}
+
+	//var priceFrom = $("#priceFrom").val();
+	//if (priceFrom = undefined) {
+	//	priceFrom = -123456789;
+	//}
+
+	var priceF = $('input[name="priceF"]').val();
+	if (!priceF) {
+		priceF = -123456789;
+	}
+
+	var priceTo = $('input[name="priceTo"]').val();
+	if (!priceTo) {
+		priceTo = 123456789;
+	}
+
+	var capacityFrom = $('input[name="capacityFrom"]').val();
+	if (!capacityFrom) {
+		capacityFrom = 0;
+	}
+
+	var destination = $('input[name="destination"]').val();
+	if (!destination) {
+		destination = "all";
+	}
+
+	var dateFrom;
+	var dateFromStr = $("#dateFrom").datepicker({ dateFormat: 'yyyy-MM-dd' }).val();
+	if (!dateFromStr) {
+		dateFrom = "all";
+	} else {
+		var dateFrom1 = formatDateISO(dateFromStr);
+		dateFrom = JSON.parse(JSON.stringify(dateFrom1));
+	}
+
+	var dateTo;
+	var dateToStr = $("#dateTo").datepicker({ dateFormat: 'yyyy-MM-dd' }).val();
+	if (!dateToStr) {
+		dateTo = "all";
+	} else {
+		var dateTo1 = formatDateISO(dateToStr);
+		dateTo = JSON.parse(JSON.stringify(dateTo1));
+	}
+
+	console.log(roomsFrom);
+	console.log(roomsTo);
+	console.log(priceFrom);
+	console.log(priceTo);
+
+	console.log(dateFrom);
+	console.log(dateTo);
+	console.log(capacityFrom);
+	console.log(destination);
+
+	console.log(priceF);
+	var priceFrom = priceF;
+	$.post({
+		url: 'rest/searchApartments',
+		data: JSON.stringify({ roomsFrom, roomsTo, capacityFrom, dateFrom, dateTo, priceFrom, priceTo, destination }),
+		contentType: 'application/json',
+		success: function (apartments) {
+			allApartments = apartments;
+			console.log(allApartments);
+			if (loggedInUser != undefined) {
+			
+				if (loggedInUserRole == "GUEST") {
+					loadApartmentsForUser();
+				} else if (loggedInUserRole == "ADMIN") {
+					loadApartmentsForAdmin();
+				} else if (loggedInUserRole == "HOST") {
+					loadApartmentsForHost();
+				} else {
+					loadApartmentsForUser();
+				}
+			}
+		},
+		error: function (jqXhr, textStatus, errorMessage) {
+			console.log(errorMessage);
+		}
+	});
+
+}
+
 function loadApartmentsForHost() {
+	$("#activeApartmentsListHost").empty();
+	$("#inactiveApartmentsListHost").empty();
 	for (let i = 0; i < allApartments.length; i++) {
 		let apartment = allApartments[i];
 
 		if (apartment.status == "ACTIVE" && apartment.host == loggedInUser) {
 			$("#activeApartmentsListHost").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
-				apartment.id + '"><p>ID:' + apartment.id + ', ' + apartment.locationString + '</p></a></li>');
+				apartment.id + '">ID:' + apartment.id + ', ' + apartment.locationString + '</a></li>');
 		}
 
 		if (apartment.status == "INACTIVE" && apartment.host == loggedInUser) {
@@ -333,9 +449,11 @@ function loadApartmentsForHost() {
 		}
 
 	}
+	
 }
 
 function loadApartmentsForUser() {
+	$("#activeApartmentsListUser").empty();
 	for (let i = 0; i < allApartments.length; i++) {
 		let apartment = allApartments[i];
 
@@ -345,17 +463,19 @@ function loadApartmentsForUser() {
 		}
 
 	}
+
+	
 }
 
 function loadApartmentsForAdmin() {
+	$("#allApartmentsListAdmin").empty();
 	for (let i = 0; i < allApartments.length; i++) {
 		let apartment = allApartments[i];
 
 		$("#allApartmentsListAdmin").append('<li class="collection-item"><a href="apartment-details.html?apartmentId=' +
 			apartment.id + '">' + 'ID:' + apartment.id + ', ' + apartment.locationString + ', hosted by: ' + apartment.host + '</a></li>');
-
-
 	}
+
 }
 
 function formatDateISO(dateToFormat) {
@@ -365,38 +485,65 @@ function formatDateISO(dateToFormat) {
 	var year = splited[2];
 	var day = splited[1];
 	day = day.replace(",", "");
-	returnValue = year+"-";
-	
-	if(month == "Jan"){
+	returnValue = year + "-";
+
+	if (month == "Jan") {
 		returnValue += "01-";
-	}else if(month == "Feb"){
+	} else if (month == "Feb") {
 		returnValue += "02-";
-	}else if(month == "Mar"){
-	returnValue += "03-";
-	}else if(month == "Apr"){
-	returnValue += "04-";	
-	}else if(month == "May"){
+	} else if (month == "Mar") {
+		returnValue += "03-";
+	} else if (month == "Apr") {
+		returnValue += "04-";
+	} else if (month == "May") {
 		returnValue += "05-";
-	}else if(month == "Jun"){
+	} else if (month == "Jun") {
 		returnValue += "06-";
-	}else if(month == "Jul"){
+	} else if (month == "Jul") {
 		returnValue += "07-";
-	}else if(month == "Aug"){
+	} else if (month == "Aug") {
 		returnValue += "08-";
-	}else if(month == "Sep"){
+	} else if (month == "Sep") {
 		returnValue += "09-";
-	}else if(month == "Oct"){
+	} else if (month == "Oct") {
 		returnValue += "10-";
-	}else if(month == "Nov"){
+	} else if (month == "Nov") {
 		returnValue += "11-";
-	}else if(month == "Dec"){
+	} else if (month == "Dec") {
 		returnValue += "12-";
-	} else{
+	} else {
 		returnValue += "1-";
 	}
-	
-	returnValue +=day;
+
+	returnValue += day;
 
 	return returnValue;
+
+}
+
+function sortApartments(sortType) {
+	$.get({
+		url: 'rest/sortApartments/' + sortType ,
+		contentType: 'application/json',
+		success: function (apartments) {
+			allApartments = apartments;
+			console.log(allApartments);
+			if (loggedInUser != undefined) {
+			
+				if (loggedInUserRole == "GUEST") {
+					loadApartmentsForUser();
+				} else if (loggedInUserRole == "ADMIN") {
+					loadApartmentsForAdmin();
+				} else if (loggedInUserRole == "HOST") {
+					loadApartmentsForHost();
+				} else {
+					loadApartmentsForUser();
+				}
+			}
+		},
+		error: function (jqXhr, textStatus, errorMessage) {
+			console.log(errorMessage);
+		}
+	});
 
 }

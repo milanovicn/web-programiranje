@@ -267,6 +267,16 @@ public class ReservationDAO {
 		return null;
 	}
 
+	public ArrayList<Reservation> searchByGuest(ArrayList<Reservation> reservationsForSearch, String guestUsername) {
+		ArrayList<Reservation> ret = new ArrayList<Reservation>();
+		for (Reservation r : reservationsForSearch) {
+			if(r.getGuest().toLowerCase().contains(guestUsername.toLowerCase())) {
+				ret.add(r);
+			}
+		}
+		return ret;
+	}
+
 
 
 }

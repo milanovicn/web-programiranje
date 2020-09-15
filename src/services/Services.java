@@ -5,7 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
@@ -29,11 +32,13 @@ import beans.Comment;
 import beans.Reservation;
 import beans.User;
 import beans.enums.ReservationStatus;
+import beans.enums.SortType;
 import beans.enums.UserRole;
 import dao.AmenitiesDAO;
 import dao.ApartmentDAO;
 import dao.ReservationDAO;
 import dao.UserDAO;
+import utils.ApartmentSearch;
 import utils.TimeInterval;
 
 @Path("")
@@ -209,64 +214,57 @@ public class Services {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createApartment(Apartment a, @Context HttpServletRequest request) {
-		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");	
+		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
 		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
-		
-		//find host that created apartment
-		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");		
+
+		// find host that created apartment
+		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
 		HttpSession session = request.getSession();
 		User host = (User) session.getAttribute("user");
-		
-		//mozda lokacija dao?
-		//KategorijaDAO kategorije = (KategorijaDAO) ctx.getAttribute("categoryDAO");	
-		
-		
-		//adding amenities to list
+
+		// adding amenities to list
 		a.setAmenities(new ArrayList<Amenities>());
 		String splitAm[] = a.getAmenitiesString().split(",");
-		for(int i = 0; i<splitAm.length; i++ ) {
+		for (int i = 0; i < splitAm.length; i++) {
 			Amenities foundAmenity = amenities.findById(Long.parseLong(splitAm[i]));
 			a.getAmenities().add(foundAmenity);
 		}
-		
+
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Date endDate = new Date();
 		Date startDate = new Date();
-		
-		try{
-			//Setting the date to the given date
+
+		try {
 			startDate = formatter.parse(a.getStartDate());
-		}catch(ParseException e){
+		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		try{
-			//Setting the date to the given date
+		try {
 			endDate = formatter.parse(a.getEndDate());
-		}catch(ParseException e){
+		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
+
 		a.getFreeDates().add(new TimeInterval(startDate, endDate));
-		
-		//formating images strings
-		for(int i = 0; i<a.getImages().size(); i++ ) {
+
+		// formating images strings
+		for (int i = 0; i < a.getImages().size(); i++) {
 			String img = a.getImages().get(i);
 			String split[] = img.split(",");
-			img=split[1];
+			img = split[1];
 			a.getImages().set(i, img);
 		}
-		
-		//creating apartment
-		if  (a != null && host != null) {
+
+		// creating apartment
+		if (a != null && host != null) {
 			a.setHost(host.getUsername());
-			Apartment apt =  apartments.addApartment(a);
+			Apartment apt = apartments.addApartment(a);
 			users.addToMyApartments(apt.getHost(), apt);
-			
-			
+
 		} else {
 			Response.status(400).entity("Apartment is null").build();
 		}
-		
+
 		return Response.status(200).entity("Apartment created" + a).build();
 	}
 
@@ -393,31 +391,46 @@ public class Services {
 
 		return Response.status(200).entity("Amenity deleted" + am).build();
 	}
-	
-	
-	//PROVERI
+
+	// PROVERI
 	@PUT
 	@Path("changeAmenityName/{oldName}/{newName}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response changeAmenityName (@PathParam("oldName") String oldName, @PathParam("newName") String newName) {
-		
+	public Response changeAmenityName(@PathParam("oldName") String oldName, @PathParam("newName") String newName) {
+
 		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
 
 		Amenities am = amenities.changeAmenityName(oldName, newName);
 
 		return Response.status(200).entity("Amenity changed" + am).build();
 	}
-	
-	
 
 	@GET
-	@Path("/getAllReservations")
+	@Path("/getAllReservations/{sortType}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Collection<Reservation> getAllReservations(@Context HttpServletRequest request) {
+	public Collection<Reservation> getAllReservations(@PathParam("sortType") SortType sortType,
+			@Context HttpServletRequest request) {
 
 		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
+		HashMap<String, Reservation> reservations = reservationsDAO.getReservations();
 
-		return reservationsDAO.findAll();
+		ArrayList<Reservation> ret = new ArrayList<Reservation>();
+
+		// getting all reservations
+		for (Reservation r : reservations.values()) {
+			ret.add(r);
+		}
+
+		//RAND means there is no need for sorting
+		if (sortType != SortType.RAND) {
+			//sorting reservations ascending order
+			ret.sort(Comparator.comparingDouble(Reservation::getCost));
+			if (sortType == SortType.DESC) {
+				//reversing sorted reservations for descending order
+				Collections.reverse(ret);
+			}
+		}
+		return ret;
 	}
 
 	@POST
@@ -438,7 +451,7 @@ public class Services {
 		res.setCost(res.getStays() * apartment.getPrice());
 		res.setGuest(guest.getUsername());
 		res.setStatus(ReservationStatus.CREATED);
-		
+
 		// setting end date
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -452,179 +465,194 @@ public class Services {
 		String endDateString = formatter.format(c.getTime());
 		res.setEndDate(endDateString);
 
-
-		//saving reservation
+		// saving reservation
 		Date endDate = new Date();
 		Date startDate = new Date();
-		
-		try{
+
+		try {
 			startDate = formatter.parse(res.getStartDate());
-		}catch(ParseException e){
+		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		try{
+		try {
 			endDate = formatter.parse(res.getEndDate());
-		}catch(ParseException e){
+		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
-		
-		//check if end date of reservation is not greater than end date of apartment
+
+		// check if end date of reservation is not greater than end date of apartment
 		Date endDateApartment = new Date();
 		Date startDateApartment = new Date();
-		try{
+		try {
 			endDateApartment = formatter.parse(apartment.getEndDate());
-		}catch(ParseException e){
+		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		try{
+		try {
 			startDateApartment = formatter.parse(apartment.getStartDate());
-		}catch(ParseException e){
+		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
+
 		if (endDate.after(endDateApartment)) {
 			return Response.status(400).entity("Reservation exceeding apartment rent time!").build();
 		}
 		if (startDate.before(startDateApartment)) {
 			return Response.status(400).entity("Reservation exceeding apartment rent time!").build();
 		}
-		
+
 		TimeInterval resInterval = new TimeInterval(startDate, endDate);
 		Reservation ret = reservationsDAO.addReservation(res, resInterval, apartment.getReservedDates());
 		System.out.println("RET:" + ret);
 		if (ret == null) {
 			return Response.status(400).entity("Reservation couldn't be created, choose valid time!").build();
 		}
-		
-		//adding reservation to apartment
+
+		// adding reservation to apartment
 		apartments.addReservation(ret, resInterval);
-		
-		//adding reservation to guest user
+
+		// adding reservation to guest user
 		users.addToMyReservations(guest.getUsername(), ret);
-		
+
 		return Response.status(200).entity("Reservation created").build();
 	}
-	
+
 	@GET
-	@Path("/getAllReservationsUser")
+	@Path("/getAllReservationsUser/{sortType}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Collection<Reservation> getAllReservationsUser(@Context HttpServletRequest request) {
+	public Collection<Reservation> getAllReservationsUser(@PathParam("sortType") SortType sortType,
+			@Context HttpServletRequest request) {
 
 		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
 		HttpSession session = request.getSession();
 		User guest = (User) session.getAttribute("user");
+		ArrayList<Reservation> ret = guest.getMyReservations();
+		if (sortType != SortType.RAND) {
+			ret.sort(Comparator.comparingDouble(Reservation::getCost));
+			if (sortType == SortType.DESC) {
+				Collections.reverse(ret);
+			}
+		}
 
-		return guest.getMyReservations();
+		return ret;
 	}
-	
+
 	@PUT
 	@Path("/cancelReservation/{apartmentId}/{startDate}/{endDate}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Reservation getAllReservationsUser(@PathParam ("apartmentId") Long apartmentId, @PathParam ("startDate") String startDate,
-			@PathParam ("endDate") String endDate, @Context HttpServletRequest request) {
+	public Reservation getAllReservationsUser(@PathParam("apartmentId") Long apartmentId,
+			@PathParam("startDate") String startDate, @PathParam("endDate") String endDate,
+			@Context HttpServletRequest request) {
 
 		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
 		Reservation ret = reservationsDAO.cancelReservation(apartmentId, startDate, endDate);
-		
-		//update status in guest list of reservations
+
+		// update status in guest list of reservations
 		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
 		HttpSession session = request.getSession();
 		User guest = (User) session.getAttribute("user");
 		users.updateReservationStatus(guest.getUsername(), ret);
-		
 
 		return ret;
 	}
-	
+
 	@GET
-	@Path("/getAllReservationsHost")
+	@Path("/getAllReservationsHost/{sortType}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Collection<Reservation> getAllReservationsHost(@Context HttpServletRequest request) {
+	public Collection<Reservation> getAllReservationsHost(@PathParam("sortType") SortType sortType,
+			@Context HttpServletRequest request) {
 
 		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
 		HttpSession session = request.getSession();
 		User host = (User) session.getAttribute("user");
-		
+
 		ApartmentDAO apartmentsDAO = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
-		ArrayList<Long> idsByHost  = apartmentsDAO.findApartmentsByHost(host.getUsername());
-		
+		ArrayList<Long> idsByHost = apartmentsDAO.findApartmentsByHost(host.getUsername());
+
 		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
-		
+
 		ArrayList<Reservation> ret = new ArrayList<Reservation>();
-		for(Long id : idsByHost) {
-			//getting resertvations that are for apartment with id
+		for (Long id : idsByHost) {
+			// getting reservations that are for apartment with id
 			ArrayList<Reservation> retById = reservationsDAO.findReservationsByApartmentId(id);
-			//adding them to final list to return
+			// adding them to final list to return
 			for (Reservation r : retById) {
-					ret.add(r);
+				ret.add(r);
 			}
 		}
-		
+
+		if (sortType != SortType.RAND) {
+			ret.sort(Comparator.comparingDouble(Reservation::getCost));
+			if (sortType == SortType.DESC) {
+				Collections.reverse(ret);
+			}
+		}
 
 		return ret;
 	}
-	
+
 	@PUT
 	@Path("/acceptReservation/{apartmentId}/{startDate}/{endDate}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Reservation acceptReservation(@PathParam ("apartmentId") Long apartmentId, @PathParam ("startDate") String startDate,
-			@PathParam ("endDate") String endDate, @Context HttpServletRequest request) {
+	public Reservation acceptReservation(@PathParam("apartmentId") Long apartmentId,
+			@PathParam("startDate") String startDate, @PathParam("endDate") String endDate,
+			@Context HttpServletRequest request) {
 
 		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
 		Reservation ret = reservationsDAO.acceptReservation(apartmentId, startDate, endDate);
-		
-		//update status in guest list of reservations
+
+		// update status in guest list of reservations
 		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
 		users.updateReservationStatus(ret.getGuest(), ret);
 
 		return ret;
 	}
-	
+
 	@PUT
 	@Path("/rejectReservation/{apartmentId}/{startDate}/{endDate}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Reservation rejectReservation(@PathParam ("apartmentId") Long apartmentId, @PathParam ("startDate") String startDate,
-			@PathParam ("endDate") String endDate, @Context HttpServletRequest request) {
+	public Reservation rejectReservation(@PathParam("apartmentId") Long apartmentId,
+			@PathParam("startDate") String startDate, @PathParam("endDate") String endDate,
+			@Context HttpServletRequest request) {
 
 		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
 		Reservation ret = reservationsDAO.rejectReservation(apartmentId, startDate, endDate);
-		
-		//update status in guest list of reservations
+
+		// update status in guest list of reservations
 		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
 		users.updateReservationStatus(ret.getGuest(), ret);
 
 		return ret;
 	}
-	
+
 	@PUT
 	@Path("/endReservation/{apartmentId}/{startDate}/{endDate}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response endReservation(@PathParam ("apartmentId") Long apartmentId, @PathParam ("startDate") String startDate,
-			@PathParam ("endDate") String endDate, @Context HttpServletRequest request) {
+	public Response endReservation(@PathParam("apartmentId") Long apartmentId, @PathParam("startDate") String startDate,
+			@PathParam("endDate") String endDate, @Context HttpServletRequest request) {
 
 		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
-		
-		
+
 		Date endDateParsed = new Date();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		try{
-			//Setting the date to the given date
+		try {
+			// Setting the date to the given date
 			endDateParsed = formatter.parse(endDate);
-		}catch(ParseException e){
+		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
-		//is reservation really finished?
-		Date now = new Date(); 
-		if(endDateParsed.after(now)) {
-			return Response.status(400).entity("Reservation couldn't be ended, reservation time has to expire!").build();
+
+		// is reservation really finished?
+		Date now = new Date();
+		if (endDateParsed.after(now)) {
+			return Response.status(400).entity("Reservation couldn't be ended, reservation time has to expire!")
+					.build();
 		}
-		
-		//if it is update status to ENDED
+
+		// if it is update status to ENDED
 		Reservation ret = reservationsDAO.endReservation(apartmentId, startDate, endDate);
-		
-		//update status in guest list of reservations
+
+		// update status in guest list of reservations
 		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
 		users.updateReservationStatus(ret.getGuest(), ret);
 
@@ -635,68 +663,67 @@ public class Services {
 	@Path("/getAllUsersHost")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<User> getAllUsersHost(@Context HttpServletRequest request) {
-		
+
 		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
 		ApartmentDAO apartmentsDAO = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
 		UserDAO usersDAO = (UserDAO) ctx.getAttribute("userDAO");
-		
+
 		HttpSession session = request.getSession();
 		User host = (User) session.getAttribute("user");
-		
-		//returns apartments ids that are created by host
-		ArrayList<Long> idsByHost  = apartmentsDAO.findApartmentsByHost(host.getUsername());
-	
-		//ret holds all the reservations that are created for this host's apartments
+
+		// returns apartments ids that are created by host
+		ArrayList<Long> idsByHost = apartmentsDAO.findApartmentsByHost(host.getUsername());
+
+		// ret holds all the reservations that are created for this host's apartments
 		ArrayList<Reservation> reservationsByHost = new ArrayList<Reservation>();
-		for(Long id : idsByHost) {
-			//getting resertvations that are for apartment with id
+		for (Long id : idsByHost) {
+			// getting resertvations that are for apartment with id
 			ArrayList<Reservation> retById = reservationsDAO.findReservationsByApartmentId(id);
-			//adding them to final list to return
+			// adding them to final list to return
 			for (Reservation r : retById) {
 				reservationsByHost.add(r);
 			}
 		}
-		
+
 		ArrayList<User> usersByHost = new ArrayList<User>();
-		for(Reservation r : reservationsByHost) {
+		for (Reservation r : reservationsByHost) {
 			User foundUser = usersDAO.findByUsername(r.getGuest());
-			if(!usersByHost.contains(foundUser))
+			if (!usersByHost.contains(foundUser))
 				usersByHost.add(foundUser);
 		}
 
 		return usersByHost;
 	}
-	
+
 	@POST
 	@Path("/commentReservation/{apartmentId}/{startDate}/{endDate}/{commentText}/{commentRate}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response commentReservation(@PathParam ("apartmentId") Long apartmentId, @PathParam ("startDate") String startDate,
-			@PathParam ("endDate") String endDate, @PathParam ("commentText") String commentText,  
-			@PathParam ("commentRate") int commentRate, @Context HttpServletRequest request) {
+	public Response commentReservation(@PathParam("apartmentId") Long apartmentId,
+			@PathParam("startDate") String startDate, @PathParam("endDate") String endDate,
+			@PathParam("commentText") String commentText, @PathParam("commentRate") int commentRate,
+			@Context HttpServletRequest request) {
 
 		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
 		HttpSession session = request.getSession();
 		User guest = (User) session.getAttribute("user");
-		
+
 		Comment newComment = new Comment(apartmentId, guest.getUsername(), commentText, commentRate);
-		
-		//add new comment to apartment
+
+		// add new comment to apartment
 		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
 		Apartment apt = apartments.findById(apartmentId);
 		apartments.addComment(apt, newComment);
-		
-		//set reservation to commented
+
+		// set reservation to commented
 		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
 		Reservation ret = reservationsDAO.commentReservation(apartmentId, startDate, endDate);
-		
-		//update commented status in guest list of reservations
-		users.updateReservationCommentStatus(ret.getGuest(), ret);
 
-		
+		// update commented status in guest list of reservations
+		users.updateReservationCommentStatus(ret.getGuest(), ret);
 
 		return Response.status(200).entity("Comment created: " + newComment).build();
 	}
-	
+
 	@GET
 	@Path("/getAllCommentsById/{apartmentId}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -707,22 +734,102 @@ public class Services {
 
 		return ret.getComments();
 	}
-	
+
 	@PUT
 	@Path("/changeCommentStatus/{apartmentId}/{commentText}/{commentRate}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response changeCommentStatus(@PathParam ("apartmentId") Long apartmentId, @PathParam ("commentText") String commentText,
-			@PathParam ("commentRate") int commentRate, @Context HttpServletRequest request) {
-
-		
+	public Response changeCommentStatus(@PathParam("apartmentId") Long apartmentId,
+			@PathParam("commentText") String commentText, @PathParam("commentRate") int commentRate,
+			@Context HttpServletRequest request) {
 
 		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
 		Apartment apt = apartments.findById(apartmentId);
 		Comment c = apartments.changeCommentStatus(apt, commentRate, commentText);
-		
+
 		return Response.status(200).entity("Comment status changed: " + c).build();
 	}
-	
-	
-	
+
+
+	@POST
+	@Path("/searchApartments")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Apartment> searchApartments(ApartmentSearch as) {
+		System.out.println("AS " + as);
+		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+		ArrayList<Apartment> ret = apartments.searchApartment(as);
+		System.out.println("RET2 : " + ret);
+		return ret;
+	}
+
+	@GET
+	@Path("/sortApartments/{sortType}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Apartment> sortApartments(@PathParam("sortType") SortType sortType) {
+		System.out.println("sortType " + sortType);
+		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+		ArrayList<Apartment> ret = apartments.sortApartments(sortType);
+		System.out.println("RET2 : " + ret);
+		for (Apartment apt : ret) {
+			System.out.println("price : " + apt.getPrice());
+		}
+
+		return ret;
+	}
+
+	@GET
+	@Path("/searchReservations/{guestUsername}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Reservation> searchReservations(@PathParam("guestUsername") String guestUsername,
+			@Context HttpServletRequest request) {
+		UserDAO users = (UserDAO) ctx.getAttribute("userDAO");
+		HttpSession session = request.getSession();
+		User loggedInUser = (User) session.getAttribute("user");
+
+		ReservationDAO reservationsDAO = (ReservationDAO) ctx.getAttribute("reservationDAO");
+		HashMap<String, Reservation> reservations = reservationsDAO.getReservations();
+
+		//list that will be searched trough
+		ArrayList<Reservation> reservationsForSearch = new ArrayList<Reservation>();
+
+		//if admin is searching, search in all reservations
+		if (loggedInUser.getRole() == UserRole.ADMIN) {
+			// getting all reservations
+			for (Reservation r : reservations.values()) {
+				System.out.println("Reservation r admin: " + r);
+				reservationsForSearch.add(r);
+			}
+		
+		} //if host is searching, search in his reservations 
+		else if (loggedInUser.getRole() == UserRole.HOST) {
+			ApartmentDAO apartmentsDAO = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+			//getting apartment ids published by this host
+			ArrayList<Long> idsByHost = apartmentsDAO.findApartmentsByHost(loggedInUser.getUsername());
+			for (Long id : idsByHost) {
+				// getting all reservations for each apartment
+				ArrayList<Reservation> retById = reservationsDAO.findReservationsByApartmentId(id);
+				// adding found reservations to list for search
+				for (Reservation r : retById) {
+					reservationsForSearch.add(r);
+				}
+			}
+			
+		}
+		
+		//finally searching by username
+		if(!guestUsername.equals("all")) {
+			ArrayList<Reservation> ret = reservationsDAO.searchByGuest(reservationsForSearch, guestUsername);
+			System.out.println("Reservation search ret: " + ret);
+			return ret;
+		} else {
+			
+			System.out.println("Reservation search reservationsForSearch: " + reservationsForSearch);
+			return reservationsForSearch;
+		}
+
+		
+	}
+
 }
