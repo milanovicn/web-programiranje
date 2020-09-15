@@ -200,6 +200,16 @@ public class ApartmentDAO {
 
 	}
 	
+	/*
+	 
+	  
+	  
+	  
+	  
+	  
+	 
+	 */
+	
 	public Apartment deleteApartment (long apartmentId) {
 		
 		Apartment a = findById(apartmentId);

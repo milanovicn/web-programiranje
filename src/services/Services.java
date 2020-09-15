@@ -270,6 +270,62 @@ public class Services {
 		return Response.status(200).entity("Apartment created" + a).build();
 	}
 
+	/*
+	 
+	  @POST
+	@Path("/editApartment")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response editApartment(Apartment a, @Context HttpServletRequest request) {
+		
+		
+		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");	
+		AmenitiesDAO amenities = (AmenitiesDAO) ctx.getAttribute("amenitiesDAO");
+		
+		//Apartment a = new Apartment();
+		
+		//adding amenities to list
+		a.setAmenities(new ArrayList<Amenities>());
+		String splitAm[] = a.getAmenitiesString().split(",");
+		for(int i = 0; i<splitAm.length; i++ ) {
+			Amenities foundAmenity = amenities.findById(Long.parseLong(splitAm[i]));
+			a.getAmenities().add(foundAmenity);
+		}
+		
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date endDate = new Date();
+		Date startDate = new Date();
+		
+		try{
+			//Setting the date to the given date
+			startDate = formatter.parse(a.getStartDate());
+		}catch(ParseException e){
+			e.printStackTrace();
+		}
+		try{
+			//Setting the date to the given date
+			endDate = formatter.parse(a.getEndDate());
+		}catch(ParseException e){
+			e.printStackTrace();
+		}
+		
+		a.getFreeDates().add(new TimeInterval(startDate, endDate));
+		
+		//formating images strings
+		for(int i = 0; i<a.getImages().size(); i++ ) {
+			String img = a.getImages().get(i);
+			String split[] = img.split(",");
+			img=split[1];
+			a.getImages().set(i, img);
+		}
+		return null;
+		
+	}
+	  
+	  
+	  
+	 * */
+	
 	@GET
 	@Path("/getAllApartments")
 	@Produces(MediaType.APPLICATION_JSON)
