@@ -38,6 +38,7 @@ import dao.AmenitiesDAO;
 import dao.ApartmentDAO;
 import dao.ReservationDAO;
 import dao.UserDAO;
+import utils.ApartmentFilter;
 import utils.ApartmentSearch;
 import utils.TimeInterval;
 import utils.UserSearch;
@@ -881,7 +882,15 @@ public class Services {
 
 	}
 
-	
-	
+
+	@POST
+	@Path("/filterApartments")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Apartment> filterApartments(ApartmentFilter af) {
+		ApartmentDAO apartments = (ApartmentDAO) ctx.getAttribute("apartmentDAO");
+		ArrayList<Apartment> ret = apartments.filterApartments(af);
+		return ret;
+	}
 
 }
