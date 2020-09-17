@@ -68,7 +68,7 @@
 
     <!--Dugmici za izmenu aktivnosti i brisanje apartmana-->
 
-    <div>
+    <div id="adminAndHost">
 
     <button id="changeStatusBtn" class="btn waves-effect waves-light" name="changeStatusBtn">Change Status
     </button>
@@ -115,7 +115,7 @@
 
         </div>
 
-            <!--Comments-->
+    <!--Comments-->
     <div>
         <div class="row ">
             <h5 class="header col s4 dark grey-text text-darken-3 ">Comments
@@ -132,6 +132,12 @@
     </div>
 
     <!-- Edit apartment details by host and admin-->
+    <div class="row" id="editDiv">
+        <h5 class="header col s4 dark grey-text text-darken-3 ">Edit Apartment
+            <a class="btn-floating  waves-effect waves-light" id="showEditDiv"><i
+                    class="material-icons">add</i></a>
+        </h5>
+    </div>
 
     <div id="changeApartmentDiv">
         <div class="row  s8 15 offset-12" style="margin-top: 20px;">
@@ -252,8 +258,18 @@
 
 
 
-    <!--Host and Admin div - delete and edit-->
+<!--Comments-->
+<div id="commentsDiv">
+    <div class="row ">
+        <h5 class="header col s4 dark grey-text text-darken-3 ">Comments
+        </h5>
+    </div>
+    <div class="row  15 offset-12" style="margin-top: 20px">
+        <ul id="commentsList" class="collection with-header">
+        </ul>
+    </div>
 
+</div>
 
     <!--  Scripts-->
     <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
