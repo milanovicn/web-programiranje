@@ -16,7 +16,8 @@ $(document).ready(function () {
 
 	$("#userDiv").hide();
 	$("#changeApartmentDiv").hide();
-
+	$("#adminAndHost").hide();
+	
 
 	$("#login").show();
 	$("#register").show();
@@ -52,15 +53,20 @@ $(document).ready(function () {
 
 	changeApartmentStatus();
 	deleteApartment();
-	$("#showReservationDiv").click(function () {
-		$("#reservationDiv").toggle();
-	});
+	
 
+	
 	$("#createReservationForm").submit(function (event) {
 		createReservation();
 
 	});
 
+	
+	$("#editDiv").hide();
+	$("#changeApartmentDiv").hide();
+	$("#showEditDiv").click(function () {
+		$("#changeApartmentDiv").toggle();
+	});
 
 	$("#editForm").submit(function (event) {
 		event.preventDefault();
@@ -82,8 +88,11 @@ function whoIsLoggedIn() {
 					loadCommentsUser();
 					//$("#hostDiv").hide();
 					$("#changeApartmentDiv").hide();
+					$("#editDiv").hide();
 					$("#userDiv").show();
 					//$("#adminDiv").hide();
+					$("#adminAndHost").hide();
+
 
 					$("#login").hide();
 					$("#register").hide();
@@ -107,11 +116,10 @@ function whoIsLoggedIn() {
 
 				} else if (user.role == "ADMIN") {
 					loadCommentsAdmin();
-					//$("#hostDiv").hide();
-					$("#changeApartmentDiv").show();
+					$("#editDiv").show();
+					//$("#changeApartmentDiv").show();
 					$("#userDiv").hide();
-					//$("#adminDiv").show();
-
+					$("#adminAndHost").show();
 
 					$("#login").hide();
 					$("#register").hide();
@@ -139,8 +147,10 @@ function whoIsLoggedIn() {
 					loadCommentsHost();
 					//$("#hostDiv").show();
 					$("#userDiv").hide();
-					$("#changeApartmentDiv").show();
+					$("#editDiv").show();
+					//$("#changeApartmentDiv").show();
 					//$("#adminDiv").hide();
+					$("#adminAndHost").show();
 
 					$("#login").hide();
 					$("#register").hide();
@@ -166,6 +176,7 @@ function whoIsLoggedIn() {
 				} else {
 					loadApartmentsForUser();
 					loadCommentsUser();
+					$("#adminAndHost").hide();
 					//$("#hostDiv").hide();
 					//$("#userDiv").show();
 					//$("#adminDiv").hide();
@@ -266,42 +277,62 @@ function loadCommentsUser() {
 	for (let i = 0; i < allComments.length; i++) {
 		let comment = allComments[i];
 		if (comment.approved == true) {
+			console.log("usao");
+			console.log(comment);
 			$("#commentsList").append('<li class="collection-item">Comment: ' + comment.content + ' <br>Rate: ' + comment.rate + '</li>');
 		}
 
 	}
+	$("#commentsDiv").load(location.href + " #commentsDiv");
+
 }
 
 function loadCommentsAdmin() {
-
+	console.log("EEEEEEEEEEHHHEEE222222222");
 	for (let i = 0; i < allComments.length; i++) {
 		let comment = allComments[i];
 		if (comment.approved == true) {
+			console.log("usao");
+			console.log(comment);
 			$("#commentsList").append('<li class="collection-item">Comment: ' + comment.content + ' <br>Rate: ' + comment.rate
 				+ ' <br>Status: approved</li>');
 		} else {
+			console.log("usao");
+			console.log(comment);
 			$("#commentsList").append('<li class="collection-item">Comment: ' + comment.content + ' <br>Rate: ' + comment.rate
 				+ ' <br>Status: disapproved</li>');
 		}
 	}
+	console.log("EEEEEEEEEEHEEEEEE222222222");
+	$("#commentsDiv").load(location.href + " #commentsDiv");
+
 }
 
 function loadCommentsHost() {
+	console.log("EEEEEEEEEE111111");
 	//<div class="col s12">
 	for (let i = 0; i < allComments.length; i++) {
 		let comment = allComments[i];
 		if (comment.approved == true) {
+			console.log("usao");
+			console.log(comment);
 			var btnHideComment = $('<div class="col s12"  style="margin-bottom: 20px;" ><button id="btnHideComment" class="btn waves-effect waves-light light-blue ">Disapprove<i class="material-icons right">close</i></button>');
 			btnHideComment.click(changeCommentStatus(comment));
 			$("#commentsList").append('<li class="collection-item">Comment: ' + comment.content + ' <br>Rate: ' + comment.rate
 				+ ' <br>').append(btnHideComment).append('</li>');
 		} else {
+			console.log("usao");
+			console.log(comment);
 			var btnShowComment = $('<div class="col s12"  style="margin-bottom: 20px;" ><button id="btnShowComment" class="btn waves-effect waves-light light-blue ">Approve<i class="material-icons right">remove_red_eye</i></button></div>');
 			btnShowComment.click(changeCommentStatus(comment));
 			$("#commentsList").append('<li class="collection-item">Comment: ' + comment.content + ' <br>Rate: ' + comment.rate
 				+ ' <br>').append(btnShowComment).append('</li>');
 		}
 	}
+	console.log("EEEEEEEEEE222222222");
+	$("#commentsDiv").load(location.href + " #commentsDiv");
+	console.log("EEEEEEEEEE3333333");
+
 }
 
 function changeCommentStatus(comment) {
@@ -340,7 +371,8 @@ function createReservation() {
 			location.reload();
 		},
 		error: function () {
-			alert("Reservation not created. Choose valid dates!");
+			//alert("Reservation not created. Choose valid dates!");
+			location.reload();
 		}
 	});
 

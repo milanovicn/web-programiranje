@@ -478,7 +478,9 @@ function loadApartmentsForUser() {
 }
 
 function loadApartmentsForAdmin() {
-	$("#allApartmentsListAdmin").empty();
+	//$("#allApartmentsListAdmin").empty();
+	$("#activeApartmentsListAdmin").empty();
+	$("#inactiveApartmentsListAdmin").empty();
 	for (let i = 0; i < allApartments.length; i++) {
 		let apartment = allApartments[i];
 
