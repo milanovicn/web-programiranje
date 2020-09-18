@@ -141,7 +141,7 @@ function whoIsLoggedIn() {
 
 					console.log("Admin logged in");
 					console.log(user);
-					loadCommentsUser();
+					
 
 				} else if (user.role == "HOST") {
 					loadCommentsHost();
@@ -174,7 +174,7 @@ function whoIsLoggedIn() {
 					console.log(user);
 
 				} else {
-					loadApartmentsForUser();
+					
 					loadCommentsUser();
 					$("#adminAndHost").hide();
 					//$("#hostDiv").hide();
@@ -184,6 +184,7 @@ function whoIsLoggedIn() {
 
 				}
 			} else {
+				loadCommentsUser();
 				console.log("No one is logged in");
 				//$("#hostDiv").hide();
 				//$("#userDiv").show();
@@ -283,7 +284,7 @@ function loadCommentsUser() {
 		}
 
 	}
-	$("#commentsDiv").load(location.href + " #commentsDiv");
+	//$("#commentsDiv").load(location.href + " #commentsDiv");
 
 }
 
@@ -304,7 +305,7 @@ function loadCommentsAdmin() {
 		}
 	}
 	console.log("EEEEEEEEEEHEEEEEE222222222");
-	$("#commentsDiv").load(location.href + " #commentsDiv");
+	//$("#commentsDiv").load(location.href + " #commentsDiv");
 
 }
 
@@ -330,7 +331,7 @@ function loadCommentsHost() {
 		}
 	}
 	console.log("EEEEEEEEEE222222222");
-	$("#commentsDiv").load(location.href + " #commentsDiv");
+	//$("#commentsDiv").load(location.href + " #commentsDiv");
 	console.log("EEEEEEEEEE3333333");
 
 }

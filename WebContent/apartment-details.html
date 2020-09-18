@@ -70,11 +70,11 @@
 
     <div id="adminAndHost">
 
-    <button id="changeStatusBtn" class="btn waves-effect waves-light" name="changeStatusBtn">Change Status
-    </button>
+        <button id="changeStatusBtn" class="btn waves-effect waves-light" name="changeStatusBtn">Change Status
+        </button>
 
-    <button id="deleteApartmentBtn" class="btn waves-effect waves-light" name="deleteApartmentBtn">Delete Apartment
-    </button>
+        <button id="deleteApartmentBtn" class="btn waves-effect waves-light" name="deleteApartmentBtn">Delete Apartment
+        </button>
 
     </div>
 
@@ -115,18 +115,7 @@
 
         </div>
 
-    <!--Comments-->
-    <div>
-        <div class="row ">
-            <h5 class="header col s4 dark grey-text text-darken-3 ">Comments
-            </h5>
-        </div>
-        <div class="row  15 offset-12" style="margin-top: 20px">
-            <ul id="commentsList" class="collection with-header">
-            </ul>
-        </div>
-
-    </div>
+       
 
 
     </div>
@@ -134,8 +123,7 @@
     <!-- Edit apartment details by host and admin-->
     <div class="row" id="editDiv">
         <h5 class="header col s4 dark grey-text text-darken-3 ">Edit Apartment
-            <a class="btn-floating  waves-effect waves-light" id="showEditDiv"><i
-                    class="material-icons">add</i></a>
+            <a class="btn-floating  waves-effect waves-light" id="showEditDiv"><i class="material-icons">add</i></a>
         </h5>
     </div>
 
@@ -164,8 +152,7 @@
                     <div class="input-field col s12">
                         <label>Capacity</label></div>
                     <div class="input-field col s12">
-                        <input class="validate" required name="capacity" type="range" id="capacity" min="1"
-                            max="40" />
+                        <input class="validate" required name="capacity" type="range" id="capacity" min="1" max="40" />
                     </div>
 
                     <div class="input-field col s12">
@@ -230,8 +217,7 @@
                     <div class="file-field input-field">
                         <div class="btn">
                             <span>File</span>
-                            <input type="file" multiple id="gallery-photo-add" name="image" accept="image/*"
-                                required>
+                            <input type="file" multiple id="gallery-photo-add" name="image" accept="image/*" required>
                         </div>
                         <div class="file-path-wrapper">
                             <input class="file-path validate" type="text" placeholder="Upload one or more files">
@@ -242,23 +228,34 @@
                     <div id="amenitiesDiv">
                     </div>
 
-                <div class="col s12">
-                    <p></p>
-                    <br>
-                    <button class="btn waves-effect waves-light left btn-large" type="submit" value="Register"
-                        name="register">Submit
-                        <i class="material-icons right">send</i>
-                    </button>
+                    <div class="col s12">
+                        <p></p>
+                        <br>
+                        <button class="btn waves-effect waves-light left btn-large" type="submit" value="Register"
+                            name="register">Submit
+                            <i class="material-icons right">send</i>
+                        </button>
+                    </div>
                 </div>
-            </div>
             </form>
         </div>
 
     </div>
 
 
+ <!--Comments-->
+ <div>
+    <div class="row ">
+        <h5 class="header col s4 dark grey-text text-darken-3 ">Comments
+        </h5>
+    </div>
+    <div class="row  15 offset-12" style="margin-top: 20px">
+        <ul id="commentsList" class="collection with-header">
+        </ul>
+    </div>
 
-<!--Comments-->
+</div>
+    <!--Comments
 <div id="commentsDiv">
     <div class="row ">
         <h5 class="header col s4 dark grey-text text-darken-3 ">Comments
@@ -270,7 +267,7 @@
     </div>
 
 </div>
-
+-->
     <!--  Scripts-->
     <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="js/apartment-details.js"></script>
